@@ -7,12 +7,6 @@
 using namespace std;
 
 /**
- * @brief A solution is represented as a vector of facility positions
- * (where each line represents the coordinates of the opened facility associated with the customer)
- */
-using Solution = vector<Point2D>;
-
-/**
  * @brief Export the solution in a .sol file
  */
 void exportSolution(Solution sol, string sol_name) {

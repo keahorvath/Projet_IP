@@ -2,8 +2,9 @@
 #include <iostream>
 #include <string>
 
-#include "Instance.cpp"
-#include "Solution.cpp"
+#include "Heuristics.hpp"
+#include "Instance.hpp"
+#include "Solution.hpp"
 #include "gurobi_c++.h"
 using namespace std;
 
@@ -200,25 +201,10 @@ int main(int argc, char** argv) {
 
     Instance inst;
     inst_file >> inst;
-
-    ColGenModel model(inst, time_limit, verbose);
-    Solution sol = model.solve();
-    cout << "Checking solution:" << endl;
-    bool check = inst.checker(sol);
-    if (check) {
-        cout << "Solution is valid" << endl;
-    } else {
-        cout << "Solution is NOT valid!" << endl;
+    // Test heuristic to find first valid cols
+    vector<Column> cols = Heuristics::generateBasicCols(inst);
+    for (Column col : cols) {
+        cout << col;
     }
-    if (export_res) {
-        cout << "Exporting solution ... ";
-        auto slash = file_name.find_last_of("/\\");
-        auto dot = file_name.find_last_of('.');
-        string instance_name = file_name.substr(slash + 1, dot - slash - 1);
-        inst.visualize(sol, instance_name);
-        exportSolution(sol, instance_name);
-        cout << "Successful!" << endl;
-    }
-
     return 0;
 }

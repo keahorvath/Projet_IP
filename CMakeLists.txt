@@ -37,6 +37,12 @@ if(GUROBI_FOUND)
                           debug ${GUROBI_CXX_DEBUG_LIBRARY})
   target_link_libraries(compactModel.exe ${GUROBI_LIBRARY})
   target_compile_definitions(compactModel.exe PRIVATE USE_GUROBI)
+
+    add_executable(ColGenModel.exe src/Instance.cpp src/Solution.cpp src/Heuristics.cpp src/Column.cpp src/ColGenModel.cpp)
+  target_link_libraries(ColGenModel.exe optimized ${GUROBI_CXX_LIBRARY}
+                          debug ${GUROBI_CXX_DEBUG_LIBRARY})
+  target_link_libraries(ColGenModel.exe ${GUROBI_LIBRARY})
+  target_compile_definitions(ColGenModel.exe PRIVATE USE_GUROBI)
 else()
   message(STATUS "Gurobi not found")
 endif()
