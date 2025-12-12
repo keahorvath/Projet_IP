@@ -50,7 +50,6 @@ struct ColGenModel {
             addColumn(col);
         }
         optimize();
-        cout << "test 1 " << endl;
     }
 
     /**
@@ -59,12 +58,11 @@ struct ColGenModel {
     void addColumn(Column col) {
         GRBColumn grb_col;
         for (int c : col.customers) {
-            cout << "adding customer " << c << endl;
             grb_col.addTerm(1, cust_assignments[c]);
         }
         grb_col.addTerm(1, col_cap);
 
-        lambda.push_back(model->addVar(0, INFINITY, col.cost(inst), GRB_CONTINUOUS, grb_col));
+        lambda.push_back(model->addVar(0, 1, col.cost(inst), GRB_CONTINUOUS, grb_col));
     }
 
     /**
@@ -99,6 +97,8 @@ struct ColGenModel {
         Column best_col = Column(-1, vector<int>{});
         int best_facility = 0;
         double best_reduced_cost = 0;
+        cout << "Theta : " << colCapDual();
+        cout << endl;
         for (int facility = 0; facility < inst.nb_potential_facilities; facility++) {
             // Get the reduced costs
             vector<double> duals = custAssignmentsDuals();
@@ -106,13 +106,12 @@ struct ColGenModel {
             double cost;
             for (int c = 0; c < duals.size(); c++) {
                 cost = distance(inst.customer_positions[c], inst.facility_positions[facility]);
-                reduced_costs.push_back(cost + duals[c]);
+                reduced_costs.push_back(cost - duals[c]);
             }
             // Create pricing model
             GRBModel pricing_model(env);
             vector<GRBVar> z(inst.nb_customers);
             GRBLinExpr expr;
-            cout << "test 2 " << endl;
 
             for (int c = 0; c < inst.nb_customers; c++) {
                 z[c] = pricing_model.addVar(0, 1, reduced_costs[c], GRB_BINARY);
@@ -127,10 +126,12 @@ struct ColGenModel {
             double obj_val = pricing_model.get(GRB_DoubleAttr_ObjVal);
 
             // If this column is better than previous best, save
-            if (obj_val <= best_reduced_cost) {
+            if (obj_val < best_reduced_cost && best_reduced_cost <= colCapDual() + 1e-6) {
                 vector<int> col;
                 for (int c = 0; c < inst.nb_customers; c++) {
-                    col.push_back(z[c].get(GRB_DoubleAttr_X));
+                    if (z[c].get(GRB_DoubleAttr_X) > 0.5) {
+                        col.push_back(c);
+                    }
                 }
                 best_facility = facility;
                 best_reduced_cost = obj_val;
@@ -148,18 +149,16 @@ struct ColGenModel {
 
     void solve() {
         while (true) {
-            cout << "before pricing " << endl;
-
             Column col = pricing();
+            cout << col << endl;
             if (col.facility == -1) break;
-            cout << "before col add" << endl;
             addColumn(col);
-            cout << "before optimize" << endl;
             optimize();
         }
         for (int g = 0; g < lambda.size(); g++) {
-            cout << "col ", g, " has value", lambda[g].get(GRB_DoubleAttr_X);
+            cout << "col " << g << " has value" << lambda[g].get(GRB_DoubleAttr_X) << endl;
         }
+        cout << "obj" << obj() << endl;
     }
 
     ~ColGenModel() {
