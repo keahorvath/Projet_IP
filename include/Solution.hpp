@@ -17,6 +17,7 @@ using Solution = std::vector<Point2D>;
  * @brief Export the solution in a .sol file
  */
 void exportSolution(Solution sol, std::string sol_name);
+
 std::ostream& operator<<(std::ostream& out, const Solution& sol);
 
 std::istream& operator>>(std::istream& in, Solution& sol);

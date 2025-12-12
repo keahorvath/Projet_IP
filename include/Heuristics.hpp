@@ -16,7 +16,8 @@
 namespace Heuristics {
 
 std::vector<Column> generateBasicCols(const Instance& inst);
-
-}
+std::vector<Column> oneColPerCustomer(const Instance& inst);
+std::vector<Column> closestCustomersCols(const Instance& inst);
+}  // namespace Heuristics
 
 #endif

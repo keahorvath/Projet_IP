@@ -6,14 +6,27 @@
 #include <iostream>
 #include <vector>
 
+#include "Instance.hpp"
+
 /**
  * @brief A column is represented by a facility and a set of customers that are assigned to it
  */
-using Column = std::pair<int, std::vector<int>>;
+struct Column {
+    int facility;
+    std::vector<int> customers;
 
-/**
- *  For debugging purposes
- */
-std::ostream& operator<<(std::ostream& out, const Column& col);
+    Column(int facility, std::vector<int> customers);
+
+    /**
+     * @brief Get the cost associated with the column
+     * (sum of the distances of each customer to the facility)
+     */
+    double cost(const Instance& inst);
+
+    /**
+     * @brief Override the << operator
+     */
+    friend std::ostream& operator<<(std::ostream& out, const Column& inst);
+};
 
 #endif

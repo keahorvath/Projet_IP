@@ -61,7 +61,7 @@ struct CompactModel {
         for (int f = 0; f < inst.nb_potential_facilities; f++) {
             expr += y[f];
         }
-        facility_nb_cap = model->addConstr(expr <= inst.nb_max_open_facilities, "no more open facilities than allowed");
+        facility_nb_cap = model->addConstr(expr, GRB_LESS_EQUAL, inst.nb_max_open_facilities, "no more open facilities than allowed");
 
         // Each customer is assigned to one facility
         cust_assignments.resize(inst.nb_customers);
@@ -70,7 +70,7 @@ struct CompactModel {
             for (int f = 0; f < inst.nb_potential_facilities; f++) {
                 expr += x[f][c];
             }
-            cust_assignments[c] = model->addConstr(expr == 1, "assign once customer " + to_string(c));
+            cust_assignments[c] = model->addConstr(expr, GRB_EQUAL, 1, "assign once customer " + to_string(c));
         }
 
         // Demand isn't more than capacity
@@ -80,7 +80,8 @@ struct CompactModel {
             for (int c = 0; c < inst.nb_customers; c++) {
                 expr += x[f][c] * inst.customer_demands[c];
             }
-            demand_caps[f] = model->addConstr(expr <= inst.facility_capacities[f] * y[f], "facility " + to_string(f) + " capacity not exceeded");
+            demand_caps[f] =
+                model->addConstr(expr, GRB_LESS_EQUAL, inst.facility_capacities[f] * y[f], "facility " + to_string(f) + " capacity not exceeded");
         }
 
         // OBJECTIVE

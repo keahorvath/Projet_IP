@@ -9,7 +9,8 @@
 using namespace std;
 
 /**
- * @struct struct that contains method to solve problem with a compact formulation
+ * @struct struct that contains methods to solve the problem
+ *         using a column generation approach
  */
 struct ColGenModel {
     GRBEnv* env;
@@ -18,124 +19,147 @@ struct ColGenModel {
     bool verbose;
     Instance inst;
 
-    vector<vector<GRBVar>> x;
-    vector<GRBVar> y;
+    vector<GRBVar> lambda;
 
-    GRBConstr facility_nb_cap;
+    GRBConstr col_cap;
     vector<GRBConstr> cust_assignments;
-    vector<GRBConstr> demand_caps;
-
-    GRBLinExpr objective;
 
     /**
-     * @brief Instanciate Model: create variables, constraints and objective
+     * @brief Instanciate Relaxed Master Problem: create constraints and create initial cols to make a feasible solution
      */
     ColGenModel(const Instance& inst_, int time_limit_ = 300, bool verbose_ = false) : inst(inst_), time_limit(time_limit_), verbose(verbose_) {
         env = new GRBEnv(true);
         if (!verbose) {
             env->set(GRB_IntParam_LogToConsole, 0);
         }
-
         env->start();
-
         model = new GRBModel(*env);
 
-        // VARIABLES
-        x.resize(inst.nb_potential_facilities);
-        y.resize(inst.nb_potential_facilities);
-
-        for (int f = 0; f < inst.nb_potential_facilities; f++) {
-            x[f].resize(inst.nb_potential_facilities);
-            // y_f equals 1 if facility f is open
-            // 0 otherwise
-            y[f] = model->addVar(0.0, 1.0, 0.0, GRB_BINARY, "y_" + to_string(f));
-            for (int c = 0; c < inst.nb_customers; c++) {
-                // x_f_c equals 1 if customer c is supplied by facility f
-                // 0 otherwise
-                x[f][c] = model->addVar(0.0, 1.0, 0.0, GRB_BINARY, "x_" + to_string(f) + "_" + to_string(c));
-            }
-        }
-
         // CONSTRAINTS
-        // Max number of open facilities
-        GRBLinExpr expr = 0;
-        for (int f = 0; f < inst.nb_potential_facilities; f++) {
-            expr += y[f];
-        }
-        facility_nb_cap = model->addConstr(expr <= inst.nb_max_open_facilities, "no more open facilities than allowed");
-
         // Each customer is assigned to one facility
         cust_assignments.resize(inst.nb_customers);
         for (int c = 0; c < inst.nb_customers; c++) {
-            expr = 0;
-            for (int f = 0; f < inst.nb_potential_facilities; f++) {
-                expr += x[f][c];
-            }
-            cust_assignments[c] = model->addConstr(expr == 1, "assign once customer " + to_string(c));
+            cust_assignments[c] = model->addConstr(0, GRB_EQUAL, 1, "assign once customer " + to_string(c));
         }
+        // Don't use more than p columns
+        col_cap = model->addConstr(0, GRB_LESS_EQUAL, inst.nb_max_open_facilities, "don't have more than p columns");
 
-        // Demand isn't more than capacity
-        demand_caps.resize(inst.nb_potential_facilities);
-        for (int f = 0; f < inst.nb_potential_facilities; f++) {
-            expr = 0;
-            for (int c = 0; c < inst.nb_customers; c++) {
-                expr += x[f][c] * inst.customer_demands[c];
-            }
-            demand_caps[f] = model->addConstr(expr <= inst.facility_capacities[f] * y[f], "facility " + to_string(f) + " capacity not exceeded");
+        // Create an initial valid solution
+        vector<Column> cols = Heuristics::closestCustomersCols(inst);
+        for (Column col : cols) {
+            addColumn(col);
         }
+        optimize();
+        cout << "test 1 " << endl;
+    }
 
-        // OBJECTIVE
-        expr = 0;
-        for (int f = 0; f < inst.nb_potential_facilities; f++) {
+    /**
+     * @brief Take a column and add it the RMP
+     */
+    void addColumn(Column col) {
+        GRBColumn grb_col;
+        for (int c : col.customers) {
+            cout << "adding customer " << c << endl;
+            grb_col.addTerm(1, cust_assignments[c]);
+        }
+        grb_col.addTerm(1, col_cap);
+
+        lambda.push_back(model->addVar(0, INFINITY, col.cost(inst), GRB_CONTINUOUS, grb_col));
+    }
+
+    /**
+     * @brief Get the value of theta
+     */
+    double colCapDual() {
+        return col_cap.get(GRB_DoubleAttr_Pi);
+    }
+
+    /**
+     * @brief Get the values of pi_c
+     */
+    vector<double> custAssignmentsDuals() {
+        vector<double> duals;
+        for (auto& constr : cust_assignments) {
+            duals.push_back(constr.get(GRB_DoubleAttr_Pi));
+        }
+        return duals;
+    }
+
+    double obj() {
+        return model->get(GRB_DoubleAttr_ObjVal);
+    }
+
+    void optimize() {
+        model->set(GRB_IntParam_Method, 0);
+        model->optimize();
+    }
+
+    Column pricing() {
+        // Find the best column for each facility and keep the best one
+        Column best_col = Column(-1, vector<int>{});
+        int best_facility = 0;
+        double best_reduced_cost = 0;
+        for (int facility = 0; facility < inst.nb_potential_facilities; facility++) {
+            // Get the reduced costs
+            vector<double> duals = custAssignmentsDuals();
+            vector<double> reduced_costs;
+            double cost;
+            for (int c = 0; c < duals.size(); c++) {
+                cost = distance(inst.customer_positions[c], inst.facility_positions[facility]);
+                reduced_costs.push_back(cost + duals[c]);
+            }
+            // Create pricing model
+            GRBModel pricing_model(env);
+            vector<GRBVar> z(inst.nb_customers);
+            GRBLinExpr expr;
+            cout << "test 2 " << endl;
+
             for (int c = 0; c < inst.nb_customers; c++) {
-                double dist = distance(inst.customer_positions[c], inst.facility_positions[f]);
-                expr += x[f][c] * dist;
+                z[c] = pricing_model.addVar(0, 1, reduced_costs[c], GRB_BINARY);
+                expr += z[c] * inst.customer_demands[c];
+            }
+
+            pricing_model.addConstr(expr, GRB_LESS_EQUAL, inst.facility_capacities[facility], "capacity constraint");
+
+            // Solve the pricing model
+            pricing_model.optimize();
+
+            double obj_val = pricing_model.get(GRB_DoubleAttr_ObjVal);
+
+            // If this column is better than previous best, save
+            if (obj_val <= best_reduced_cost) {
+                vector<int> col;
+                for (int c = 0; c < inst.nb_customers; c++) {
+                    col.push_back(z[c].get(GRB_DoubleAttr_X));
+                }
+                best_facility = facility;
+                best_reduced_cost = obj_val;
+                best_col = Column(facility, col);
             }
         }
-        objective = expr;
-        model->setObjective(objective);
+        return best_col;
     }
 
     Solution convertSolution() {
+        // TODO
         Solution sol;
-        for (int c = 0; c < inst.nb_customers; c++) {
-            for (int f = 0; f < inst.nb_potential_facilities; f++) {
-                if (x[f][c].get(GRB_DoubleAttr_X) == 1) {
-                    Point2D assignment = {inst.facility_positions[f]};
-                    sol.push_back(assignment);
-                }
-            }
-        }
         return sol;
     }
 
-    Solution solve() {
-        model->set(GRB_DoubleParam_TimeLimit, time_limit);
-        model->optimize();
+    void solve() {
+        while (true) {
+            cout << "before pricing " << endl;
 
-        // Check solution status and print results
-        int status = model->get(GRB_IntAttr_Status);
-        if (status == GRB_OPTIMAL) {
-            cout << "-----------------------" << endl;
-            cout << "OPTIMAL SOLUTION FOUND!" << endl;
-            cout << "-----------------------" << endl;
-            cout << "Runtime : " << model->get(GRB_DoubleAttr_Runtime) << "s" << endl;
-            cout << "Optimal solution value : " << model->get(GRB_DoubleAttr_ObjVal) << endl;
-            return convertSolution();
-        } else if (status == GRB_TIME_LIMIT) {
-            cout << "--------------------------------------------" << endl;
-            cout << "NO OPTIMAL SOLUTION FOUND WITHIN TIME LIMIT!" << endl;
-            cout << "--------------------------------------------" << endl;
-            cout << "Runtime : " << model->get(GRB_DoubleAttr_Runtime) << "s" << endl;
-            cout << "Best solution value : " << model->get(GRB_DoubleAttr_ObjVal) << endl;
-            return convertSolution();
-        } else {
-            cout << "---------------------------" << endl;
-            cerr << "NO FEASIBLE SOLUTION FOUND!" << endl;
-            cout << "---------------------------" << endl;
-            return Solution();
+            Column col = pricing();
+            if (col.facility == -1) break;
+            cout << "before col add" << endl;
+            addColumn(col);
+            cout << "before optimize" << endl;
+            optimize();
         }
-        return convertSolution();
+        for (int g = 0; g < lambda.size(); g++) {
+            cout << "col ", g, " has value", lambda[g].get(GRB_DoubleAttr_X);
+        }
     }
 
     ~ColGenModel() {
@@ -201,10 +225,11 @@ int main(int argc, char** argv) {
 
     Instance inst;
     inst_file >> inst;
-    // Test heuristic to find first valid cols
-    vector<Column> cols = Heuristics::generateBasicCols(inst);
-    for (Column col : cols) {
-        cout << col;
+    vector<Column> cols = Heuristics::closestCustomersCols(inst);
+    for (Column c : cols) {
+        cout << c;
     }
+    ColGenModel model(inst, time_limit, verbose);
+    model.solve();
     return 0;
 }
