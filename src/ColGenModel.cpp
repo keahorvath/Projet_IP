@@ -42,7 +42,7 @@ struct ColGenModel {
             cust_assignments[c] = model->addConstr(0, GRB_EQUAL, 1, "assign once customer " + to_string(c));
         }
         // Don't use more than p columns
-        col_cap = model->addConstr(0, GRB_LESS_EQUAL, inst.nb_max_open_facilities, "don't have more than p columns");
+        col_cap = model->addConstr(0, GRB_LESS_EQUAL, inst.nb_max_open_facilities, "no more than p columns");
 
         // Create an initial valid solution
         vector<Column> cols = Heuristics::closestCustomersCols(inst);
@@ -97,8 +97,8 @@ struct ColGenModel {
         Column best_col = Column(-1, vector<int>{});
         int best_facility = 0;
         double best_reduced_cost = 0;
-        cout << "Theta : " << colCapDual();
-        cout << endl;
+        // cout << "Theta : " << colCapDual();
+        // cout << endl;
         for (int facility = 0; facility < inst.nb_potential_facilities; facility++) {
             // Get the reduced costs
             vector<double> duals = custAssignmentsDuals();
@@ -126,7 +126,7 @@ struct ColGenModel {
             double obj_val = pricing_model.get(GRB_DoubleAttr_ObjVal);
 
             // If this column is better than previous best, save
-            if (obj_val < best_reduced_cost && best_reduced_cost <= colCapDual() + 1e-6) {
+            if (obj_val - colCapDual() + 1e-6 < best_reduced_cost) {
                 vector<int> col;
                 for (int c = 0; c < inst.nb_customers; c++) {
                     if (z[c].get(GRB_DoubleAttr_X) > 0.5) {
@@ -150,14 +150,14 @@ struct ColGenModel {
     void solve() {
         while (true) {
             Column col = pricing();
-            cout << col << endl;
+            // cout << col << endl;
             if (col.facility == -1) break;
             addColumn(col);
             optimize();
         }
-        for (int g = 0; g < lambda.size(); g++) {
-            cout << "col " << g << " has value" << lambda[g].get(GRB_DoubleAttr_X) << endl;
-        }
+        // for (int g = 0; g < lambda.size(); g++) {
+        //     cout << "col " << g << " has value" << lambda[g].get(GRB_DoubleAttr_X) << endl;
+        // }
         cout << "obj" << obj() << endl;
     }
 
