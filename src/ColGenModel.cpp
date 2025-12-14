@@ -1,6 +1,8 @@
 #include "ColGenModel.hpp"
 
+#include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <string>
@@ -11,7 +13,8 @@
 #include "gurobi_c++.h"
 using namespace std;
 
-ColGenModel::ColGenModel(const Instance& inst_, int time_limit_, bool verbose_) : inst(inst_), time_limit(time_limit_), verbose(verbose_) {
+ColGenModel::ColGenModel(const Instance& inst_, PricingMethod pricing_method_, ColumnStrategy column_strategy_, bool verbose_)
+    : inst(inst_), pricing_method(pricing_method_), column_strategy(column_strategy_), verbose(verbose_) {
     env = new GRBEnv(true);
     if (!verbose) {
         env->set(GRB_IntParam_LogToConsole, 0);
@@ -173,14 +176,14 @@ pair<double, Column> ColGenModel::pricingSubProblemDP(int facility) {
     return {best_rc - colCapDual(), col};
 }
 
-vector<Column> ColGenModel::pricing(bool one_col_per_sub_pb, bool mip) {
+vector<Column> ColGenModel::pricing() {
     vector<Column> cols;
     Column best_col;
     double best_col_value = 0;
     for (int facility = 0; facility < inst.nb_potential_facilities; facility++) {
         // Solve the sub problem associated with facility (with given method)
         pair<double, Column> sub_pb;
-        if (mip) {
+        if (pricing_method == PricingMethod::MIP) {
             sub_pb = pricingSubProblemMIP(facility);
         } else {
             sub_pb = pricingSubProblemDP(facility);
@@ -198,7 +201,7 @@ vector<Column> ColGenModel::pricing(bool one_col_per_sub_pb, bool mip) {
     }
 
     // Either return the best column or all of them (depending on what is asked)
-    if (one_col_per_sub_pb) {
+    if (column_strategy == ColumnStrategy::MULTI) {
         return cols;
     }
     if (best_col.facility == -1) {  // No column found
@@ -213,20 +216,47 @@ Solution ColGenModel::convertSolution() {
     return sol;
 }
 
-void ColGenModel::solve(bool print_res, bool one_col_per_sub_pb, bool mip) {
+int ColGenModel::solve(int time_limit) {
     int nb_cols = 0;
+    auto start = chrono::high_resolution_clock::now();
+    chrono::duration<double> time_elapsed = chrono::high_resolution_clock::now() - start;
     while (true) {
-        vector<Column> cols = pricing(one_col_per_sub_pb, mip);
+        time_elapsed = chrono::high_resolution_clock::now() - start;
+        if (time_elapsed.count() >= time_limit) {
+            break;
+        }
+        vector<Column> cols = pricing();
         if (cols.empty()) break;
         for (Column col : cols) {
             addColumn(col);
-            // cout << col;
             nb_cols++;
         }
         optimize();
     }
-    cout << "added " << nb_cols << "cols" << endl;
-    cout << "obj" << obj() << endl;
+    time_elapsed = chrono::high_resolution_clock::now() - start;
+    runtime = time_elapsed.count();
+    return nb_cols;
+}
+
+void ColGenModel::printResult() {
+    int status = model->get(GRB_IntAttr_Status);
+    double obj_val = model->get(GRB_DoubleAttr_ObjVal);
+    if (status == GRB_OPTIMAL) {
+        cout << "-----------------------" << endl;
+        cout << "OPTIMAL SOLUTION FOUND!" << endl;
+        cout << "-----------------------" << endl;
+        cout << "Optimal solution value : " << obj_val << " (" << fixed << setprecision(4) << runtime << "s)" << endl;
+    } else if (status == GRB_TIME_LIMIT) {
+        cout << "--------------------------------------------" << endl;
+        cout << "NO OPTIMAL SOLUTION FOUND WITHIN TIME LIMIT!" << endl;
+        cout << "--------------------------------------------" << endl;
+        cout << "Best solution value : " << obj_val << " (" << fixed << setprecision(4) << runtime << "s)" << endl;
+        cout << "Dual Bound : " << model->get(GRB_DoubleAttr_ObjBound) << endl;
+    } else {
+        cout << "---------------------------" << endl;
+        cerr << "NO FEASIBLE SOLUTION FOUND!" << endl;
+        cout << "---------------------------" << endl;
+    }
 }
 
 ColGenModel::~ColGenModel() {

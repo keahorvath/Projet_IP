@@ -9,17 +9,20 @@
 using namespace std;
 
 void usage(const string& prog_name) {
-    cout << "Usage: " << prog_name << " file_path [time_limit] [-v] [-e]" << endl;
-    cout << "  file_path  : path to the input instance file" << endl;
-    cout << "  time_limit : maximum execution time in seconds (optional), default is 300s" << endl;
-    cout << "  -v         : add to enable verbose output (optional)" << endl;
-    cout << "  -e         : add to export solution file and solution visualizer (optional)" << endl;
+    cout << "Usage: " << prog_name << " file_path [time_limit] [pricing_method] [column_strategy] [-v]" << endl;
+    cout << "  file_path       : path to the input instance file" << endl;
+    cout << "  time_limit      : maximum execution time in seconds (optional), default is 300s" << endl;
+    cout << "  pricing_method  : MIP or DP (optional), default is MULTI" << endl;
+    cout << "  column_strategy : SINGLE or MULTI (optional), default is MULTI" << endl;
+    cout << "  -v             : add to enable verbose output (optional)" << endl;
 }
 
 int main(int argc, char** argv) {
     int time_limit = 300;
     bool verbose = false;
-    bool export_res = false;
+    PricingMethod pricing_method = PricingMethod::DP;
+    ColumnStrategy column_strategy = ColumnStrategy::MULTI;
+
     if (argc < 2) {
         usage(argv[0]);
         return 1;
@@ -39,8 +42,10 @@ int main(int argc, char** argv) {
             string arg = argv[i];
             if (arg == "-v") {
                 verbose = true;
-            } else if (arg == "-e") {
-                export_res = true;
+            } else if (arg == "SINGLE") {
+                column_strategy = ColumnStrategy::SINGLE;
+            } else if (arg == "MIP") {
+                pricing_method = PricingMethod::MIP;
             } else if (!has_time_limit) {
                 try {
                     time_limit = stod(argv[2]);
@@ -65,11 +70,14 @@ int main(int argc, char** argv) {
 
     Instance inst;
     inst_file >> inst;
+    cout << "Solving model ..." << endl;
     vector<Column> cols = Heuristics::closestCustomersCols(inst);
     for (Column c : cols) {
         cout << c;
     }
-    ColGenModel model(inst, time_limit, verbose);
-    model.solve(true, false, false);
+    ColGenModel model(inst, pricing_method, column_strategy, verbose);
+    int nb_cols = model.solve(time_limit);
+    model.printResult();
+
     return 0;
 }
