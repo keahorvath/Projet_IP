@@ -13,8 +13,9 @@
 #include "gurobi_c++.h"
 using namespace std;
 
-ColGenModel::ColGenModel(const Instance& inst_, PricingMethod pricing_method_, ColumnStrategy column_strategy_, bool verbose_)
-    : inst(inst_), pricing_method(pricing_method_), column_strategy(column_strategy_), verbose(verbose_) {
+ColGenModel::ColGenModel(const Instance& inst_, PricingMethod pricing_method_, ColumnStrategy column_strategy_, Stabilization stabilization_,
+                         bool verbose_)
+    : inst(inst_), pricing_method(pricing_method_), column_strategy(column_strategy_), stabilization(stabilization_), verbose(verbose_) {
     env = new GRBEnv(true);
     if (!verbose) {
         env->set(GRB_IntParam_LogToConsole, 0);
@@ -24,12 +25,12 @@ ColGenModel::ColGenModel(const Instance& inst_, PricingMethod pricing_method_, C
 
     // CONSTRAINTS
     // Each customer is assigned to one facility
-    cust_assignments.resize(inst.nb_customers);
+    pi_constrs.resize(inst.nb_customers);
     for (int c = 0; c < inst.nb_customers; c++) {
-        cust_assignments[c] = model->addConstr(0, GRB_EQUAL, 1, "assign once customer " + to_string(c));
+        pi_constrs[c] = model->addConstr(0, GRB_EQUAL, 1, "assign once customer " + to_string(c));
     }
     // Don't use more than p columns
-    col_cap = model->addConstr(0, GRB_LESS_EQUAL, inst.nb_max_open_facilities, "no more than p columns");
+    theta_constr = model->addConstr(0, GRB_LESS_EQUAL, inst.nb_max_open_facilities, "no more than p columns");
 
     // Create an initial valid solution
     vector<Column> cols = Heuristics::closestCustomersCols(inst);
@@ -37,28 +38,46 @@ ColGenModel::ColGenModel(const Instance& inst_, PricingMethod pricing_method_, C
         addColumn(col);
     }
     optimize();
+
+    // Initialize stabilization
+    theta_center = getTheta();
+    pi_center = getPi();
+    best_LB = -numeric_limits<double>::infinity();
 }
 
 void ColGenModel::addColumn(Column col) {
     GRBColumn grb_col;
     for (int c : col.customers) {
-        grb_col.addTerm(1, cust_assignments[c]);
+        grb_col.addTerm(1, pi_constrs[c]);
     }
-    grb_col.addTerm(1, col_cap);
+    grb_col.addTerm(1, theta_constr);
 
     lambda.push_back(model->addVar(0, 1, col.cost(inst), GRB_CONTINUOUS, grb_col));
 }
 
-double ColGenModel::colCapDual() {
-    return col_cap.get(GRB_DoubleAttr_Pi);
+double ColGenModel::getTheta() {
+    return theta_constr.get(GRB_DoubleAttr_Pi);
 }
 
-vector<double> ColGenModel::custAssignmentsDuals() {
+double ColGenModel::getStabilizedTheta() {
+    return stab_alpha * theta_center + (1 - stab_alpha) * getTheta();
+}
+
+vector<double> ColGenModel::getPi() {
     vector<double> duals;
-    for (auto& constr : cust_assignments) {
+    for (auto& constr : pi_constrs) {
         duals.push_back(constr.get(GRB_DoubleAttr_Pi));
     }
     return duals;
+}
+
+vector<double> ColGenModel::getStabilizedPi() {
+    vector<double> stab_pi(inst.nb_customers);
+    vector<double> current_pi = getPi();
+    for (int c = 0; c < inst.nb_customers; c++) {
+        stab_pi[c] = stab_alpha * pi_center[c] + (1 - stab_alpha) * current_pi[c];
+    }
+    return stab_pi;
 }
 
 double ColGenModel::obj() {
@@ -70,20 +89,19 @@ void ColGenModel::optimize() {
     model->optimize();
 }
 
-vector<double> ColGenModel::reducedCosts(int facility) {
-    vector<double> duals = custAssignmentsDuals();
+vector<double> ColGenModel::reducedCosts(int facility, vector<double> pi) {
     vector<double> reduced_costs;
     double cost;
-    for (int c = 0; c < duals.size(); c++) {
+    for (int c = 0; c < pi.size(); c++) {
         cost = distance(inst.customer_positions[c], inst.facility_positions[facility]);
-        reduced_costs.push_back(cost - duals[c]);
+        reduced_costs.push_back(cost - pi[c]);
     }
     return reduced_costs;
 }
 
-pair<double, Column> ColGenModel::pricingSubProblemMIP(int facility) {
+pair<double, Column> ColGenModel::pricingSubProblemMIP(int facility, double theta, vector<double> pi) {
     // Get the reduced costs
-    vector<double> reduced_costs = reducedCosts(facility);
+    vector<double> reduced_costs = reducedCosts(facility, pi);
     // Create pricing model
     GRBModel pricing_model(env);
     vector<GRBVar> z(inst.nb_customers);
@@ -98,7 +116,7 @@ pair<double, Column> ColGenModel::pricingSubProblemMIP(int facility) {
     pricing_model.optimize();
 
     // Check if col has negative reduced cost
-    double obj_val = pricing_model.get(GRB_DoubleAttr_ObjVal) - colCapDual();
+    double obj_val = pricing_model.get(GRB_DoubleAttr_ObjVal) - theta;
 
     // If positive (with small allowed rounding error), return blank column
     if (obj_val >= -1e-6) {
@@ -114,9 +132,9 @@ pair<double, Column> ColGenModel::pricingSubProblemMIP(int facility) {
     return {obj_val, Column(facility, col)};
 }
 
-pair<double, Column> ColGenModel::pricingSubProblemDP(int facility) {
+pair<double, Column> ColGenModel::pricingSubProblemDP(int facility, double theta, vector<double> pi) {
     // Get the reduced costs for each customer
-    vector<double> rc = reducedCosts(facility);
+    vector<double> rc = reducedCosts(facility, pi);
 
     int capacity = inst.facility_capacities[facility];
 
@@ -146,7 +164,7 @@ pair<double, Column> ColGenModel::pricingSubProblemDP(int facility) {
     }
 
     // get best RC
-    double best_rc = colCapDual() - 1e-6;
+    double best_rc = theta - 1e-6;
     int best_state = -1;
     for (int state = 0; state < capacity + 1; state++) {
         if (RC[state] < best_rc) {
@@ -173,39 +191,80 @@ pair<double, Column> ColGenModel::pricingSubProblemDP(int facility) {
     // Otherwise return optimal solution
     Column col = Column(facility, best_customers);
     // cout << "adding col " << col << " rc = " << best_rc << endl;
-    return {best_rc - colCapDual(), col};
+    return {best_rc - theta, col};
 }
 
 vector<Column> ColGenModel::pricing() {
     vector<Column> cols;
+    vector<double> col_values;
     Column best_col;
     double best_col_value = 0;
+    double best_col_value_stab = 0;
+    double obj_val = obj();
+    // Calculate duals (depending on if stabilization or not)
+    double theta;
+    vector<double> pi;
+    if (stabilization == Stabilization::INOUT) {
+        theta = getStabilizedTheta();
+        pi = getStabilizedPi();
+    } else {
+        theta = getTheta();
+        pi = getPi();
+    }
     for (int facility = 0; facility < inst.nb_potential_facilities; facility++) {
         // Solve the sub problem associated with facility (with given method)
         pair<double, Column> sub_pb;
+
         if (pricing_method == PricingMethod::MIP) {
-            sub_pb = pricingSubProblemMIP(facility);
+            sub_pb = pricingSubProblemMIP(facility, theta, pi);
         } else {
-            sub_pb = pricingSubProblemDP(facility);
+            sub_pb = pricingSubProblemDP(facility, theta, pi);
         }
         if (sub_pb.second.facility == -1) {  // No column was found -> ignore
             continue;
         }
         // Update best column if necesssary
-        if (sub_pb.first < best_col_value) {
-            best_col = sub_pb.second;
-            best_col_value = sub_pb.first;
+        if (stabilization == Stabilization::INOUT) {
+            // Calculate reduced cost for normal duals
+            Column col = sub_pb.second;
+            double rc = -getTheta();
+            vector<double> normal_pi = getPi();
+            for (int c : col.customers) {
+                rc += distance(inst.customer_positions[c], inst.facility_positions[facility]) - normal_pi[c];
+            }
+            if (rc < -1e-6) {
+                // add to list of columns
+                cols.push_back(sub_pb.second);
+                col_values.push_back(sub_pb.first);
+            }
+            if (rc < best_col_value) {
+                best_col = col;
+                best_col_value = rc;
+            }
+        } else {
+            if (sub_pb.first < best_col_value) {
+                best_col = sub_pb.second;
+                best_col_value = sub_pb.first;
+            }
+            // add to list of columns
+            cols.push_back(sub_pb.second);
+            col_values.push_back(sub_pb.first);
         }
-        // add to list of columns
-        cols.push_back(sub_pb.second);
     }
-
+    if (best_col_value == 0) {  // No column found
+        return {};
+    }
+    if (stabilization == Stabilization::INOUT) {
+        double lagrangian_bound = obj() + inst.nb_max_open_facilities * best_col_value;
+        if (lagrangian_bound > best_LB) {
+            best_LB = lagrangian_bound;
+            theta_center = theta;
+            pi_center = pi;
+        }
+    }
     // Either return the best column or all of them (depending on what is asked)
     if (column_strategy == ColumnStrategy::MULTI) {
         return cols;
-    }
-    if (best_col.facility == -1) {  // No column found
-        return {};
     }
     return {best_col};
 }
