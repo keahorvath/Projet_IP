@@ -15,6 +15,10 @@ struct Column {
     int facility;
     std::vector<int> customers;
 
+    /**
+     * default constructor
+     */
+    Column();
     Column(int facility, std::vector<int> customers);
 
     /**

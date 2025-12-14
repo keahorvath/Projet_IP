@@ -1,225 +1,151 @@
+#include "CompactModel.hpp"
+
+#include <chrono>
+#include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <string>
 
 #include "Instance.hpp"
 #include "Solution.hpp"
 #include "gurobi_c++.h"
+
 using namespace std;
 
-/**
- * @struct struct that contains method to solve problem with a compact formulation
- */
-struct CompactModel {
-    GRBEnv* env;
-    GRBModel* model;
-    int time_limit;
-    bool verbose;
-    Instance inst;
+CompactModel::CompactModel(const Instance& inst_, bool verbose_) : inst(inst_), verbose(verbose_) {
+    env = new GRBEnv(true);
+    if (!verbose) {
+        env->set(GRB_IntParam_LogToConsole, 0);
+    }
 
-    vector<vector<GRBVar>> x;
-    vector<GRBVar> y;
+    env->start();
 
-    GRBConstr facility_nb_cap;
-    vector<GRBConstr> cust_assignments;
-    vector<GRBConstr> demand_caps;
+    model = new GRBModel(*env);
 
-    GRBLinExpr objective;
+    // VARIABLES
+    x.resize(inst.nb_potential_facilities);
+    y.resize(inst.nb_potential_facilities);
 
-    /**
-     * @brief Instanciate Model: create variables, constraints and objective
-     */
-    CompactModel(const Instance& inst_, int time_limit_ = 300, bool verbose_ = false) : inst(inst_), time_limit(time_limit_), verbose(verbose_) {
-        env = new GRBEnv(true);
-        if (!verbose) {
-            env->set(GRB_IntParam_LogToConsole, 0);
-        }
-
-        env->start();
-
-        model = new GRBModel(*env);
-
-        // VARIABLES
-        x.resize(inst.nb_potential_facilities);
-        y.resize(inst.nb_potential_facilities);
-
-        for (int f = 0; f < inst.nb_potential_facilities; f++) {
-            x[f].resize(inst.nb_potential_facilities);
-            // y_f equals 1 if facility f is open
-            // 0 otherwise
-            y[f] = model->addVar(0.0, 1.0, 0.0, GRB_BINARY, "y_" + to_string(f));
-            for (int c = 0; c < inst.nb_customers; c++) {
-                // x_f_c equals 1 if customer c is supplied by facility f
-                // 0 otherwise
-                x[f][c] = model->addVar(0.0, 1.0, 0.0, GRB_BINARY, "x_" + to_string(f) + "_" + to_string(c));
-            }
-        }
-
-        // CONSTRAINTS
-        // Max number of open facilities
-        GRBLinExpr expr = 0;
-        for (int f = 0; f < inst.nb_potential_facilities; f++) {
-            expr += y[f];
-        }
-        facility_nb_cap = model->addConstr(expr, GRB_LESS_EQUAL, inst.nb_max_open_facilities, "no more open facilities than allowed");
-
-        // Each customer is assigned to one facility
-        cust_assignments.resize(inst.nb_customers);
+    for (int f = 0; f < inst.nb_potential_facilities; f++) {
+        x[f].resize(inst.nb_potential_facilities);
+        // y_f equals 1 if facility f is open
+        // 0 otherwise
+        y[f] = model->addVar(0.0, 1.0, 0.0, GRB_BINARY, "y_" + to_string(f));
         for (int c = 0; c < inst.nb_customers; c++) {
-            expr = 0;
-            for (int f = 0; f < inst.nb_potential_facilities; f++) {
-                expr += x[f][c];
-            }
-            cust_assignments[c] = model->addConstr(expr, GRB_EQUAL, 1, "assign once customer " + to_string(c));
+            // x_f_c equals 1 if customer c is supplied by facility f
+            // 0 otherwise
+            x[f][c] = model->addVar(0.0, 1.0, 0.0, GRB_BINARY, "x_" + to_string(f) + "_" + to_string(c));
         }
+    }
 
-        // Demand isn't more than capacity
-        demand_caps.resize(inst.nb_potential_facilities);
-        for (int f = 0; f < inst.nb_potential_facilities; f++) {
-            expr = 0;
-            for (int c = 0; c < inst.nb_customers; c++) {
-                expr += x[f][c] * inst.customer_demands[c];
-            }
-            demand_caps[f] =
-                model->addConstr(expr, GRB_LESS_EQUAL, inst.facility_capacities[f] * y[f], "facility " + to_string(f) + " capacity not exceeded");
-        }
+    // CONSTRAINTS
+    // Max number of open facilities
+    GRBLinExpr expr = 0;
+    for (int f = 0; f < inst.nb_potential_facilities; f++) {
+        expr += y[f];
+    }
+    facility_nb_cap = model->addConstr(expr, GRB_LESS_EQUAL, inst.nb_max_open_facilities, "no more open facilities than allowed");
 
-        // OBJECTIVE
+    // Each customer is assigned to one facility
+    cust_assignments.resize(inst.nb_customers);
+    for (int c = 0; c < inst.nb_customers; c++) {
         expr = 0;
         for (int f = 0; f < inst.nb_potential_facilities; f++) {
-            for (int c = 0; c < inst.nb_customers; c++) {
-                double dist = distance(inst.customer_positions[c], inst.facility_positions[f]);
-                expr += x[f][c] * dist;
-            }
+            expr += x[f][c];
         }
-        objective = expr;
-        model->setObjective(objective);
+        cust_assignments[c] = model->addConstr(expr, GRB_EQUAL, 1, "assign once customer " + to_string(c));
     }
 
-    Solution convertSolution() {
-        Solution sol;
+    // Demand isn't more than capacity
+    demand_caps.resize(inst.nb_potential_facilities);
+    for (int f = 0; f < inst.nb_potential_facilities; f++) {
+        expr = 0;
         for (int c = 0; c < inst.nb_customers; c++) {
-            for (int f = 0; f < inst.nb_potential_facilities; f++) {
-                if (x[f][c].get(GRB_DoubleAttr_X) == 1) {
-                    Point2D assignment = {inst.facility_positions[f]};
-                    sol.push_back(assignment);
-                }
-            }
+            expr += x[f][c] * inst.customer_demands[c];
         }
-        return sol;
+        demand_caps[f] =
+            model->addConstr(expr, GRB_LESS_EQUAL, inst.facility_capacities[f] * y[f], "facility " + to_string(f) + " capacity not exceeded");
     }
 
-    Solution solve() {
-        model->set(GRB_DoubleParam_TimeLimit, time_limit);
-        model->optimize();
-
-        // Check solution status and print results
-        int status = model->get(GRB_IntAttr_Status);
-        if (status == GRB_OPTIMAL) {
-            cout << "-----------------------" << endl;
-            cout << "OPTIMAL SOLUTION FOUND!" << endl;
-            cout << "-----------------------" << endl;
-            cout << "Runtime : " << model->get(GRB_DoubleAttr_Runtime) << "s" << endl;
-            cout << "Optimal solution value : " << model->get(GRB_DoubleAttr_ObjVal) << endl;
-            return convertSolution();
-        } else if (status == GRB_TIME_LIMIT) {
-            cout << "--------------------------------------------" << endl;
-            cout << "NO OPTIMAL SOLUTION FOUND WITHIN TIME LIMIT!" << endl;
-            cout << "--------------------------------------------" << endl;
-            cout << "Runtime : " << model->get(GRB_DoubleAttr_Runtime) << "s" << endl;
-            cout << "Best solution value : " << model->get(GRB_DoubleAttr_ObjVal) << endl;
-            return convertSolution();
-        } else {
-            cout << "---------------------------" << endl;
-            cerr << "NO FEASIBLE SOLUTION FOUND!" << endl;
-            cout << "---------------------------" << endl;
-            return Solution();
+    // OBJECTIVE
+    expr = 0;
+    for (int f = 0; f < inst.nb_potential_facilities; f++) {
+        for (int c = 0; c < inst.nb_customers; c++) {
+            double dist = distance(inst.customer_positions[c], inst.facility_positions[f]);
+            expr += x[f][c] * dist;
         }
-        return convertSolution();
     }
+    objective = expr;
+    model->setObjective(objective);
 
-    ~CompactModel() {
-        delete env;
-        delete model;
-    }
-};
-
-void usage(const string& prog_name) {
-    cout << "Usage: " << prog_name << " file_path [time_limit] [-v] [-e]" << endl;
-    cout << "  file_path  : path to the input instance file" << endl;
-    cout << "  time_limit : maximum execution time in seconds (optional), default is 300s" << endl;
-    cout << "  -v         : add to enable verbose output (optional)" << endl;
-    cout << "  -e         : add to export solution file and solution visualizer (optional)" << endl;
+    // Initialize relaxed model
+    model->update();
+    relaxed_model = new GRBModel(model->relax());
 }
 
-int main(int argc, char** argv) {
-    int time_limit = 300;
-    bool verbose = false;
-    bool export_res = false;
-    if (argc < 2) {
-        usage(argv[0]);
-        return 1;
+Solution CompactModel::convertSolution() {
+    // If no valid solution, return empty sol
+    if (model->get(GRB_IntAttr_SolCount) == 0) {
+        return Solution();
     }
-    // First argument : File path
-    string file_name = argv[1];
-    ifstream inst_file(file_name);
-    if (!inst_file) {
-        cerr << "Error: Couldn't open file!" << endl;
-        cerr << "Please enter valid file path" << endl;
-        return 1;
-    }
-    // Optionnal arguments
-    if (argc >= 3) {
-        bool has_time_limit = false;
-        for (int i = 2; i < argc; i++) {
-            string arg = argv[i];
-            if (arg == "-v") {
-                verbose = true;
-            } else if (arg == "-e") {
-                export_res = true;
-            } else if (!has_time_limit) {
-                try {
-                    time_limit = stod(argv[2]);
-                    has_time_limit = true;
-                    if (time_limit <= 0) {
-                        cerr << "Error: time_limit must be positive" << endl;
-                        usage(argv[0]);
-                        return 1;
-                    }
-                } catch (...) {
-                    cerr << "Error: Unknown argument" << endl;
-                    usage(argv[0]);
-                    return 1;
-                }
-            } else {
-                cerr << "Error: Unknown argument" << endl;
-                usage(argv[0]);
-                return 1;
+    // Otherwise, convert and return solution
+    Solution sol;
+    for (int c = 0; c < inst.nb_customers; c++) {
+        for (int f = 0; f < inst.nb_potential_facilities; f++) {
+            if (x[f][c].get(GRB_DoubleAttr_X) == 1) {
+                Point2D assignment = {inst.facility_positions[f]};
+                sol.push_back(assignment);
             }
         }
     }
+    return sol;
+}
 
-    Instance inst;
-    inst_file >> inst;
-    cout << "Solving model ..." << endl;
-    CompactModel model(inst, time_limit, verbose);
-    Solution sol = model.solve();
-    cout << "Checking solution:" << endl;
-    bool check = inst.checker(sol);
-    if (check) {
-        cout << "Solution is valid" << endl;
+void CompactModel::solve(int time_limit) {
+    model->set(GRB_DoubleParam_TimeLimit, time_limit);
+    model->optimize();
+}
+
+void CompactModel::solveRelaxation(int time_limit) {
+    relaxed_model->set(GRB_DoubleParam_TimeLimit, time_limit);
+    relaxed_model->optimize();
+}
+
+void CompactModel::printResult() {
+    int status = model->get(GRB_IntAttr_Status);
+    double runtime = model->get(GRB_DoubleAttr_Runtime);
+    double obj_val = model->get(GRB_DoubleAttr_ObjVal);
+    int status_relaxed = relaxed_model->get(GRB_IntAttr_Status);
+    double runtime_relaxed = relaxed_model->get(GRB_DoubleAttr_Runtime);
+    double obj_val_relaxed = relaxed_model->get(GRB_DoubleAttr_ObjVal);
+    if (status == GRB_OPTIMAL) {
+        cout << "-----------------------" << endl;
+        cout << "OPTIMAL SOLUTION FOUND!" << endl;
+        cout << "-----------------------" << endl;
+        cout << "Optimal solution value : " << obj_val << " (" << runtime << "s)" << endl;
+    } else if (status == GRB_TIME_LIMIT) {
+        cout << "--------------------------------------------" << endl;
+        cout << "NO OPTIMAL SOLUTION FOUND WITHIN TIME LIMIT!" << endl;
+        cout << "--------------------------------------------" << endl;
+        cout << "Best solution value : " << obj_val << " (" << runtime << "s)" << endl;
+        cout << "Dual Bound : " << model->get(GRB_DoubleAttr_ObjBound) << endl;
     } else {
-        cout << "Solution is NOT valid!" << endl;
+        cout << "---------------------------" << endl;
+        cerr << "NO FEASIBLE SOLUTION FOUND!" << endl;
+        cout << "---------------------------" << endl;
     }
-    if (export_res) {
-        cout << "Exporting solution ... ";
-        auto slash = file_name.find_last_of("/\\");
-        auto dot = file_name.find_last_of('.');
-        string instance_name = file_name.substr(slash + 1, dot - slash - 1);
-        inst.visualize(sol, instance_name);
-        exportSolution(sol, instance_name);
-        cout << "Successful!" << endl;
+    if (status_relaxed == GRB_OPTIMAL) {
+        cout << "Optimal relaxation value : " << obj_val_relaxed << " (" << runtime_relaxed << "s)" << endl;
+    } else if (status_relaxed == GRB_TIME_LIMIT) {
+        cout << "Best relaxation value : " << obj_val_relaxed << " (" << runtime_relaxed << "s)" << endl;
+    } else {
+        cout << "No feasible relaxed solution found" << endl;
     }
+}
 
-    return 0;
+CompactModel::~CompactModel() {
+    delete env;
+    delete model;
+    delete relaxed_model;
 }

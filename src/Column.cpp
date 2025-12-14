@@ -3,6 +3,7 @@
 #include <ostream>
 using namespace std;
 
+Column::Column() : facility(-1), customers(vector<int>{}) {}
 Column::Column(int facility, vector<int> customers) : facility(facility), customers(customers) {}
 
 double Column::cost(const Instance& inst) {
@@ -18,6 +19,6 @@ ostream& operator<<(ostream& out, const Column& col) {
     for (int c : col.customers) {
         out << c << " ";
     }
-    out << ")" << std::endl;
+    out << ")" << endl;
     return out;
 }

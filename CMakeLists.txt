@@ -32,17 +32,23 @@ if(GUROBI_FOUND)
   include_directories(${GUROBI_INCLUDE_DIRS}) 
   include_directories(${CMAKE_SOURCE_DIR}/include)
 
-  add_executable(compactModel.exe src/Instance.cpp src/Solution.cpp src/CompactModel.cpp)
-  target_link_libraries(compactModel.exe optimized ${GUROBI_CXX_LIBRARY}
+  add_executable(compactSolver.exe src/Instance.cpp src/Solution.cpp src/CompactModel.cpp compactSolver.cpp)
+  target_link_libraries(compactSolver.exe optimized ${GUROBI_CXX_LIBRARY}
                           debug ${GUROBI_CXX_DEBUG_LIBRARY})
-  target_link_libraries(compactModel.exe ${GUROBI_LIBRARY})
-  target_compile_definitions(compactModel.exe PRIVATE USE_GUROBI)
+  target_link_libraries(compactSolver.exe ${GUROBI_LIBRARY})
+  target_compile_definitions(compactSolver.exe PRIVATE USE_GUROBI)
 
-    add_executable(colGenModel.exe src/Instance.cpp src/Solution.cpp src/Heuristics.cpp src/Column.cpp src/ColGenModel.cpp)
-  target_link_libraries(colGenModel.exe optimized ${GUROBI_CXX_LIBRARY}
+  add_executable(colGenSolver.exe src/Instance.cpp src/Solution.cpp src/Heuristics.cpp src/Column.cpp src/ColGenModel.cpp colGenSolver.cpp)
+  target_link_libraries(colGenSolver.exe optimized ${GUROBI_CXX_LIBRARY}
                           debug ${GUROBI_CXX_DEBUG_LIBRARY})
-  target_link_libraries(colGenModel.exe ${GUROBI_LIBRARY})
-  target_compile_definitions(colGenModel.exe PRIVATE USE_GUROBI)
+  target_link_libraries(colGenSolver.exe ${GUROBI_LIBRARY})
+  target_compile_definitions(colGenSolver.exe PRIVATE USE_GUROBI)
+
+  add_executable(benchmark.exe src/Instance.cpp src/Solution.cpp src/Heuristics.cpp src/Column.cpp src/ColGenModel.cpp src/CompactModel.cpp benchmark.cpp)
+  target_link_libraries(benchmark.exe optimized ${GUROBI_CXX_LIBRARY}
+                          debug ${GUROBI_CXX_DEBUG_LIBRARY})
+  target_link_libraries(benchmark.exe ${GUROBI_LIBRARY})
+  target_compile_definitions(benchmark.exe PRIVATE USE_GUROBI)
 else()
   message(STATUS "Gurobi not found")
 endif()
