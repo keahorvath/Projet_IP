@@ -59,7 +59,7 @@ double ColGenModel::getTheta() {
     return theta_constr.get(GRB_DoubleAttr_Pi);
 }
 
-double ColGenModel::getStabilizedTheta() {
+double ColGenModel::getSeparationTheta() {
     return stab_alpha * theta_center + (1 - stab_alpha) * getTheta();
 }
 
@@ -71,7 +71,7 @@ vector<double> ColGenModel::getPi() {
     return duals;
 }
 
-vector<double> ColGenModel::getStabilizedPi() {
+vector<double> ColGenModel::getSeparationPi() {
     vector<double> stab_pi(inst.nb_customers);
     vector<double> current_pi = getPi();
     for (int c = 0; c < inst.nb_customers; c++) {
@@ -199,22 +199,13 @@ vector<Column> ColGenModel::pricing() {
     vector<double> col_values;
     Column best_col;
     double best_col_value = 0;
-    double best_col_value_stab = 0;
     double obj_val = obj();
-    // Calculate duals (depending on if stabilization or not)
-    double theta;
-    vector<double> pi;
-    if (stabilization == Stabilization::INOUT) {
-        theta = getStabilizedTheta();
-        pi = getStabilizedPi();
-    } else {
-        theta = getTheta();
-        pi = getPi();
-    }
+    // Calculate duals
+    double theta = getTheta();
+    vector<double> pi = getPi();
     for (int facility = 0; facility < inst.nb_potential_facilities; facility++) {
         // Solve the sub problem associated with facility (with given method)
         pair<double, Column> sub_pb;
-
         if (pricing_method == PricingMethod::MIP) {
             sub_pb = pricingSubProblemMIP(facility, theta, pi);
         } else {
@@ -224,43 +215,96 @@ vector<Column> ColGenModel::pricing() {
             continue;
         }
         // Update best column if necesssary
-        if (stabilization == Stabilization::INOUT) {
-            // Calculate reduced cost for normal duals
-            Column col = sub_pb.second;
-            double rc = -getTheta();
-            vector<double> normal_pi = getPi();
-            for (int c : col.customers) {
-                rc += distance(inst.customer_positions[c], inst.facility_positions[facility]) - normal_pi[c];
-            }
-            if (rc < -1e-6) {
-                // add to list of columns
-                cols.push_back(sub_pb.second);
-                col_values.push_back(sub_pb.first);
-            }
-            if (rc < best_col_value) {
-                best_col = col;
-                best_col_value = rc;
-            }
-        } else {
-            if (sub_pb.first < best_col_value) {
-                best_col = sub_pb.second;
-                best_col_value = sub_pb.first;
-            }
-            // add to list of columns
-            cols.push_back(sub_pb.second);
-            col_values.push_back(sub_pb.first);
+        if (sub_pb.first < best_col_value) {
+            best_col = sub_pb.second;
+            best_col_value = sub_pb.first;
         }
+        // add to list of columns
+        cols.push_back(sub_pb.second);
+        col_values.push_back(sub_pb.first);
     }
     if (best_col_value == 0) {  // No column found
         return {};
     }
-    if (stabilization == Stabilization::INOUT) {
-        double lagrangian_bound = obj() + inst.nb_max_open_facilities * best_col_value;
-        if (lagrangian_bound > best_LB) {
-            best_LB = lagrangian_bound;
-            theta_center = theta;
-            pi_center = pi;
+    // Either return the best column or all of them (depending on what is asked)
+    if (column_strategy == ColumnStrategy::MULTI) {
+        return cols;
+    }
+    return {best_col};
+}
+
+vector<Column> ColGenModel::inOutPricing() {
+    vector<Column> cols;
+    vector<double> col_values;
+    Column best_col;
+    double best_col_value = 0;
+
+    // Calculate all the different duals
+    double theta_in = theta_center;    // not technically used here but written to make it clearer
+    vector<double> pi_in = pi_center;  // same
+    double theta_out = getTheta();
+    vector<double> pi_out = getPi();
+    double theta_sep = getSeparationTheta();
+    vector<double> pi_sep = getSeparationPi();
+
+    double sum_pricing_reduced_costs = 0;  // used to check if LB improved and update stabilization center
+    bool LB_improved = false;
+
+    for (int facility = 0; facility < inst.nb_potential_facilities; facility++) {
+        // Solve the sub problem associated with facility (with given method)
+        pair<double, Column> sub_pb;
+
+        if (pricing_method == PricingMethod::MIP) {
+            sub_pb = pricingSubProblemMIP(facility, theta_sep, pi_sep);
+        } else {
+            sub_pb = pricingSubProblemDP(facility, theta_sep, pi_sep);
         }
+        if (sub_pb.second.facility == -1) {  // No column was found -> ignore
+            continue;
+        }
+        // add reduced cost associated with this facility to sum
+        sum_pricing_reduced_costs += sub_pb.first;
+
+        //  Calculate reduced cost for normal duals
+        Column col = sub_pb.second;
+        double rc = -theta_out;
+        vector<double> normal_pi = pi_out;
+        for (int c : col.customers) {
+            rc += distance(inst.customer_positions[c], inst.facility_positions[facility]) - normal_pi[c];
+        }
+        // if reduced cost is negative, add to cols
+        if (rc < -1e-6) {
+            // add to list of columns
+            cols.push_back(sub_pb.second);
+            col_values.push_back(sub_pb.first);
+        }
+        // update best found col
+        if (rc < best_col_value) {
+            best_col = col;
+            best_col_value = rc;
+        }
+    }
+    // Update best LB and stabilization center if bound improved
+    double dual_objective_value = 0.0;
+    for (int c = 0; c < inst.nb_customers; c++) {
+        dual_objective_value += pi_sep[c];
+    }
+
+    dual_objective_value += inst.nb_max_open_facilities * theta_sep;
+    double LB = dual_objective_value + sum_pricing_reduced_costs;
+    if (LB > best_LB) {
+        best_LB = LB;
+        pi_center = pi_sep;
+        theta_center = theta_sep;
+        LB_improved = true;
+    }
+    if (best_col_value == 0) {  // No column found
+        // if we improved the lagrangian bound but didn't add columns, we don't want to stop the program so
+        // return artifial column that indicates to keep going
+        if (LB_improved) {
+            return {Column()};
+        }
+        return {};
     }
     // Either return the best column or all of them (depending on what is asked)
     if (column_strategy == ColumnStrategy::MULTI) {
@@ -279,17 +323,33 @@ int ColGenModel::solve(int time_limit) {
     int nb_cols = 0;
     auto start = chrono::high_resolution_clock::now();
     chrono::duration<double> time_elapsed = chrono::high_resolution_clock::now() - start;
+    bool final_in_out_phase = false;
     while (true) {
         time_elapsed = chrono::high_resolution_clock::now() - start;
         if (time_elapsed.count() >= time_limit) {
             break;
         }
-        vector<Column> cols = pricing();
-        if (cols.empty()) break;
+        vector<Column> cols;
+        if (stabilization == Stabilization::NONE || final_in_out_phase) {
+            cols = pricing();
+        } else if (stabilization == Stabilization::INOUT) {
+            cols = inOutPricing();
+        }
+        if (cols.empty()) {
+            if (stabilization == Stabilization::INOUT && !final_in_out_phase) {
+                final_in_out_phase = true;
+                continue;
+            }
+            break;
+        }
+        if (cols[0].facility == -1) {  // Means that we didn't add column but that stabilization center was updated
+            continue;
+        }
         for (Column col : cols) {
             addColumn(col);
             nb_cols++;
         }
+
         optimize();
     }
     time_elapsed = chrono::high_resolution_clock::now() - start;

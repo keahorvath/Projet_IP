@@ -28,7 +28,7 @@ CompactModel::CompactModel(const Instance& inst_, bool verbose_) : inst(inst_), 
     y.resize(inst.nb_potential_facilities);
 
     for (int f = 0; f < inst.nb_potential_facilities; f++) {
-        x[f].resize(inst.nb_potential_facilities);
+        x[f].resize(inst.nb_customers);
         // y_f equals 1 if facility f is open
         // 0 otherwise
         y[f] = model->addVar(0.0, 1.0, 0.0, GRB_BINARY, "y_" + to_string(f));
@@ -93,7 +93,7 @@ Solution CompactModel::convertSolution() {
     Solution sol;
     for (int c = 0; c < inst.nb_customers; c++) {
         for (int f = 0; f < inst.nb_potential_facilities; f++) {
-            if (x[f][c].get(GRB_DoubleAttr_X) == 1) {
+            if (x[f][c].get(GRB_DoubleAttr_X) > 0.5) {  // Got a bug when == 1 because of rounding errors
                 Point2D assignment = {inst.facility_positions[f]};
                 sol.push_back(assignment);
             }

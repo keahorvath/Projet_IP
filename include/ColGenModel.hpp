@@ -62,9 +62,9 @@ struct ColGenModel {
      */
     std::vector<double> getPi();
 
-    double getStabilizedTheta();
+    double getSeparationTheta();
 
-    std::vector<double> getStabilizedPi();
+    std::vector<double> getSeparationPi();
 
     double obj();
 
@@ -77,6 +77,10 @@ struct ColGenModel {
     std::pair<double, Column> pricingSubProblemDP(int facility, double theta, std::vector<double> pi);
 
     std::vector<Column> pricing();
+
+    // I could have handled the stabilizing method in the pricing() method directly,
+    // but i thought it would be easier to understand the code if in separate methods
+    std::vector<Column> inOutPricing();
 
     Solution convertSolution();
 

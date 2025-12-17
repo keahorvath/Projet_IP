@@ -21,6 +21,7 @@ struct Instance {
     std::vector<Point2D> facility_positions;
     std::vector<int> facility_capacities;
 
+    bool isFeasible();
     /**
      * @brief Checks if the given solution is valid
      */

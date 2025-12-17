@@ -74,6 +74,11 @@ int main(int argc, char** argv) {
 
     Instance inst;
     inst_file >> inst;
+    if (!inst.isFeasible()) {
+        cout << "Instance " << file_name << " is infeasible" << endl;
+        return 0;
+    }
+
     cout << "Solving model ..." << endl;
     vector<Column> cols = Heuristics::closestCustomersCols(inst);
     for (Column c : cols) {

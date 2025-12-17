@@ -6,6 +6,32 @@
 #include "Solution.hpp"
 using namespace std;
 
+bool Instance::isFeasible() {
+    // Get total customer demand
+    double total_demand = 0;
+    for (double d : customer_demands) {
+        total_demand += d;
+    }
+    // Get all the facility capacities and sort them
+    vector<pair<double, int>> sorted_capacities;
+    for (int f = 0; f < nb_potential_facilities; ++f) {
+        sorted_capacities.push_back({facility_capacities[f], f});
+    }
+    sort(sorted_capacities.rbegin(), sorted_capacities.rend());
+
+    // Get max possible capacity of facilities (taking the capacity of the p biggest facilities)
+    double max_possible_capacity = 0;
+
+    for (int i = 0; i < nb_max_open_facilities; ++i) {
+        max_possible_capacity += sorted_capacities[i].first;
+    }
+
+    if (total_demand > max_possible_capacity) {
+        return false;
+    }
+    return true;
+}
+
 bool Instance::checker(const Solution& sol) {
     if (sol.size() != nb_customers) {
         cerr << "The solution should have the same number of customers as the instance!\n";

@@ -66,6 +66,10 @@ int main(int argc, char** argv) {
 
     Instance inst;
     inst_file >> inst;
+    if (!inst.isFeasible()) {
+        cout << "Instance " << file_name << " is infeasible" << endl;
+        return 0;
+    }
     cout << "Solving model ..." << endl;
     CompactModel model(inst, verbose);
     model.solve(time_limit);
