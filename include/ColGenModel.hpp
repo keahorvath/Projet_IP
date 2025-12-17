@@ -82,8 +82,6 @@ struct ColGenModel {
     // but i thought it would be easier to understand the code if in separate methods
     std::vector<Column> inOutPricing();
 
-    Solution convertSolution();
-
     // return number of cols
     int solve(int time_limit);
 

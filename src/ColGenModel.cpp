@@ -313,12 +313,6 @@ vector<Column> ColGenModel::inOutPricing() {
     return {best_col};
 }
 
-Solution ColGenModel::convertSolution() {
-    // TODO
-    Solution sol;
-    return sol;
-}
-
 int ColGenModel::solve(int time_limit) {
     int nb_cols = 0;
     auto start = chrono::high_resolution_clock::now();
