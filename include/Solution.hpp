@@ -18,8 +18,14 @@ using Solution = std::vector<Point2D>;
  */
 void exportSolution(Solution sol, std::string sol_name);
 
+/**
+ * @brief Override the << operator
+ */
 std::ostream& operator<<(std::ostream& out, const Solution& sol);
 
+/**
+ * @brief Override the >> operator
+ */
 std::istream& operator>>(std::istream& in, Solution& sol);
 
 #endif

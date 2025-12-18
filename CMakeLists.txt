@@ -38,7 +38,7 @@ if(GUROBI_FOUND)
   target_link_libraries(compactSolver.exe ${GUROBI_LIBRARY})
   target_compile_definitions(compactSolver.exe PRIVATE USE_GUROBI)
 
-  add_executable(colGenSolver.exe src/Instance.cpp src/Solution.cpp src/Heuristics.cpp src/Column.cpp src/ColGenModel.cpp colGenSolver.cpp)
+  add_executable(colGenSolver.exe src/Instance.cpp src/Solution.cpp src/Heuristics.cpp src/Column.cpp src/ColGenModel.cpp src/DivingHeuristic.cpp colGenSolver.cpp)
   target_link_libraries(colGenSolver.exe optimized ${GUROBI_CXX_LIBRARY}
                           debug ${GUROBI_CXX_DEBUG_LIBRARY})
   target_link_libraries(colGenSolver.exe ${GUROBI_LIBRARY})

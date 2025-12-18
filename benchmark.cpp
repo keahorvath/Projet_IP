@@ -91,7 +91,6 @@ void compactModelResults(vector<string> file_paths, string csv_file, int time_li
             // Solve instance
             CompactModel solver(inst);
             solver.solve(time_limit);
-
             solver.solveRelaxation(time_limit);
 
             // Get results from Gurobi
@@ -307,9 +306,9 @@ void compareWithAndWithoutStabilization(vector<string> file_paths, string csv_fi
 int main(int argc, char** argv) {
     vector<string> file_paths = getSortedFiles("../instances");
     vector<string> valid_paths = getValidInstances(file_paths);
-    compactModelResults(valid_paths, "compact_model.csv", 60);
-    // singleVsMulti(file_paths, "single_vs_multi.csv", 60);
-    // comparePricingMethods(file_paths, "pricing_method.csv", 60);
-    // compareWithAndWithoutStabilization(file_paths, "with_without_stabilization.csv", 60);
+    compactModelResults(valid_paths, "compact_model.csv", 600);
+    //  singleVsMulti(file_paths, "single_vs_multi.csv", 60);
+    //  comparePricingMethods(file_paths, "pricing_method.csv", 60);
+    // compareWithAndWithoutStabilization(valid_paths, "with_without_stabilization.csv", 60);
     return 1;
 }

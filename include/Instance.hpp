@@ -21,29 +21,38 @@ struct Instance {
     std::vector<Point2D> facility_positions;
     std::vector<int> facility_capacities;
 
+    /**
+     * @brief Checks if the instance is feasible
+     */
     bool isFeasible();
+
     /**
      * @brief Checks if the given solution is valid
      */
     bool checker(const Solution& sol);
+
     /**
      * @brief Returs the value of the given solution
      * (returns +inf if solution is not valid)
      */
     double objective_value(const Solution& sol);
+
     /**
      * @brief Given the position of a facility, return its corresponding index in the facility_positions vector
      * return -1 if the position isn't a facility position
      */
     int get_facility_index(const Point2D& pos);
+
     /**
      * @brief Create an SVG file to visualize an instance/solution
      */
     void visualize(const Solution& sol, std::string instance_name);
+
     /**
      * @brief Override the << operator
      */
     friend std::ostream& operator<<(std::ostream& out, const Instance& inst);
+
     /**
      * @brief Override the >> operator
      */

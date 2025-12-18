@@ -130,6 +130,7 @@ void CompactModel::printResult() {
         cout << "--------------------------------------------" << endl;
         cout << "Best solution value : " << obj_val << " (" << runtime << "s)" << endl;
         cout << "Dual Bound : " << model->get(GRB_DoubleAttr_ObjBound) << endl;
+        cout << "Gap : " << model->get(GRB_DoubleAttr_MIPGap) << "%" << endl;
     } else {
         cout << "---------------------------" << endl;
         cerr << "NO FEASIBLE SOLUTION FOUND!" << endl;

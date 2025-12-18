@@ -16,9 +16,13 @@ struct Column {
     std::vector<int> customers;
 
     /**
-     * default constructor
+     * @brief default constructor -> creates an empty (invalid) column
      */
     Column();
+
+    /**
+     * @brief Constructor: creates a column with given parameters
+     */
     Column(int facility, std::vector<int> customers);
 
     /**

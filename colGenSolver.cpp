@@ -3,9 +3,9 @@
 #include <string>
 
 #include "ColGenModel.hpp"
+#include "DivingHeuristic.hpp"
 #include "Heuristics.hpp"
 #include "Instance.hpp"
-
 using namespace std;
 
 void usage(const string& prog_name) {
@@ -21,6 +21,7 @@ void usage(const string& prog_name) {
 int main(int argc, char** argv) {
     int time_limit = 300;
     bool verbose = false;
+    // Default values (the best)
     PricingMethod pricing_method = PricingMethod::DP;
     ColumnStrategy column_strategy = ColumnStrategy::MULTI;
     Stabilization stabilization = Stabilization::INOUT;
@@ -80,13 +81,21 @@ int main(int argc, char** argv) {
     }
 
     cout << "Solving model ..." << endl;
-    vector<Column> cols = Heuristics::closestCustomersCols(inst);
-    for (Column c : cols) {
-        cout << c;
-    }
     ColGenModel model(inst, pricing_method, column_strategy, stabilization, verbose);
-    int nb_cols = model.solve(time_limit);
-    model.printResult();
+    // model.solve(time_limit);
+    // model.printResult();
+    DivingHeuristic diving(model);
+    diving.solve(60);
 
+    // for (GRBVar var : model.lambda) {
+    //     cout << var.get(GRB_StringAttr_VarName) << " = " << var.get(GRB_DoubleAttr_X) << endl;
+    // }
+    cout << "Value = " << model.obj() << endl;
+    Solution sol = diving.convertSolution();
+    if (inst.checker(sol)) {
+        cout << "Solution is valid" << endl;
+    } else {
+        cout << "Solution in NOT valid" << endl;
+    }
     return 0;
 }

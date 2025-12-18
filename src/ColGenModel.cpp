@@ -33,7 +33,7 @@ ColGenModel::ColGenModel(const Instance& inst_, PricingMethod pricing_method_, C
     theta_constr = model->addConstr(0, GRB_LESS_EQUAL, inst.nb_max_open_facilities, "no more than p columns");
 
     // Create an initial valid solution
-    vector<Column> cols = Heuristics::closestCustomersCols(inst);
+    vector<Column> cols = Heuristics::pBiggestFacilities(inst);
     for (Column col : cols) {
         addColumn(col);
     }
@@ -47,12 +47,15 @@ ColGenModel::ColGenModel(const Instance& inst_, PricingMethod pricing_method_, C
 
 void ColGenModel::addColumn(Column col) {
     GRBColumn grb_col;
+    string name = "facility " + to_string(col.facility) + " has customers ";
     for (int c : col.customers) {
         grb_col.addTerm(1, pi_constrs[c]);
+        name += to_string(c);
+        name += " ";
     }
     grb_col.addTerm(1, theta_constr);
-
-    lambda.push_back(model->addVar(0, 1, col.cost(inst), GRB_CONTINUOUS, grb_col));
+    model_cols.push_back(col);
+    lambda.push_back(model->addVar(0, 1, col.cost(inst), GRB_CONTINUOUS, grb_col, name));
 }
 
 double ColGenModel::getTheta() {
@@ -137,14 +140,12 @@ pair<double, Column> ColGenModel::pricingSubProblemDP(int facility, double theta
     vector<double> rc = reducedCosts(facility, pi);
 
     int capacity = inst.facility_capacities[facility];
-
     // Store the best found reduced costs for each capacity state (from 0 to u_f)
     // We are minimizing so initialize all with +inf
     vector<double> RC(capacity + 1, numeric_limits<double>::infinity());
     RC[0] = 0;  // Initialize
     // We also have to store which customers are in the best sol for each capacity state
     vector<vector<bool>> c_in_best_sol(inst.nb_customers, vector<bool>(capacity + 1, false));
-
     // For each customer, see if adding it to a state is beneficial
     for (int c = 0; c < inst.nb_customers; c++) {
         int demand = inst.customer_demands[c];
@@ -172,12 +173,10 @@ pair<double, Column> ColGenModel::pricingSubProblemDP(int facility, double theta
             best_state = state;
         }
     }
-    // cout << "best state" << best_state << endl;
     //  If positive, return blank column
     if (best_state == -1) {
         return {0, Column()};
     }
-
     // Backtrack: find customers in best sol
     int current_state = best_state;
     vector<int> best_customers = {};
@@ -187,11 +186,8 @@ pair<double, Column> ColGenModel::pricingSubProblemDP(int facility, double theta
             current_state -= inst.customer_demands[c];
         }
     }
-
     // Otherwise return optimal solution
-    Column col = Column(facility, best_customers);
-    // cout << "adding col " << col << " rc = " << best_rc << endl;
-    return {best_rc - theta, col};
+    return {best_rc - theta, Column(facility, best_customers)};
 }
 
 vector<Column> ColGenModel::pricing() {
@@ -253,7 +249,6 @@ vector<Column> ColGenModel::inOutPricing() {
     for (int facility = 0; facility < inst.nb_potential_facilities; facility++) {
         // Solve the sub problem associated with facility (with given method)
         pair<double, Column> sub_pb;
-
         if (pricing_method == PricingMethod::MIP) {
             sub_pb = pricingSubProblemMIP(facility, theta_sep, pi_sep);
         } else {
@@ -289,7 +284,6 @@ vector<Column> ColGenModel::inOutPricing() {
     for (int c = 0; c < inst.nb_customers; c++) {
         dual_objective_value += pi_sep[c];
     }
-
     dual_objective_value += inst.nb_max_open_facilities * theta_sep;
     double LB = dual_objective_value + sum_pricing_reduced_costs;
     if (LB > best_LB) {
@@ -317,7 +311,7 @@ int ColGenModel::solve(int time_limit) {
     int nb_cols = 0;
     auto start = chrono::high_resolution_clock::now();
     chrono::duration<double> time_elapsed = chrono::high_resolution_clock::now() - start;
-    bool final_in_out_phase = false;
+    bool final_in_out_phase = false;  // Used to fix small errors at the end of the inout stabilization method
     while (true) {
         time_elapsed = chrono::high_resolution_clock::now() - start;
         if (time_elapsed.count() >= time_limit) {
@@ -336,14 +330,13 @@ int ColGenModel::solve(int time_limit) {
             }
             break;
         }
-        if (cols[0].facility == -1) {  // Means that we didn't add column but that stabilization center was updated
+        if (cols[0].facility == -1) {  // Means that we didn't add any column but that stabilization center was updated so do pricing again
             continue;
         }
         for (Column col : cols) {
             addColumn(col);
             nb_cols++;
         }
-
         optimize();
     }
     time_elapsed = chrono::high_resolution_clock::now() - start;
@@ -364,7 +357,6 @@ void ColGenModel::printResult() {
         cout << "NO OPTIMAL SOLUTION FOUND WITHIN TIME LIMIT!" << endl;
         cout << "--------------------------------------------" << endl;
         cout << "Best solution value : " << obj_val << " (" << fixed << setprecision(4) << runtime << "s)" << endl;
-        cout << "Dual Bound : " << model->get(GRB_DoubleAttr_ObjBound) << endl;
     } else {
         cout << "---------------------------" << endl;
         cerr << "NO FEASIBLE SOLUTION FOUND!" << endl;

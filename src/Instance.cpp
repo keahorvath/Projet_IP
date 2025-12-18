@@ -21,11 +21,9 @@ bool Instance::isFeasible() {
 
     // Get max possible capacity of facilities (taking the capacity of the p biggest facilities)
     double max_possible_capacity = 0;
-
     for (int i = 0; i < nb_max_open_facilities; ++i) {
         max_possible_capacity += sorted_capacities[i].first;
     }
-
     if (total_demand > max_possible_capacity) {
         return false;
     }
@@ -34,32 +32,34 @@ bool Instance::isFeasible() {
 
 bool Instance::checker(const Solution& sol) {
     if (sol.size() != nb_customers) {
-        cerr << "The solution should have the same number of customers as the instance!\n";
+        cerr << "The solution should have the same number of customers as the instance!" << endl;
         return false;
     }
     unordered_set<Point2D, Point2DHash> used_facilities(sol.begin(), sol.end());
     int nb_used_facilities = used_facilities.size();
     if (nb_used_facilities > nb_max_open_facilities) {
-        cerr << nb_used_facilities << " facilities are used but only " << nb_max_open_facilities << " are allowed!\n";
+        cerr << nb_used_facilities << " facilities are used but only " << nb_max_open_facilities << " are allowed!" << endl;
         return false;
     }
     vector<double> demand(nb_potential_facilities, 0.0);
     for (int c = 0; c < nb_customers; c++) {
         int facility_index = get_facility_index(sol[c]);
         if (facility_index == -1) {
-            cerr << "Customer " << c + 1 << " is assigned to a facility that doesn't exist! (" << sol[c].x << "," << sol[c].y << ")\n";
+            cerr << "Customer " << c + 1 << " is assigned to a facility that doesn't exist! (" << sol[c].x << "," << sol[c].y << ")" << endl;
             return false;
         }
         demand[facility_index] += customer_demands[c];
     }
     for (int f = 0; f < nb_potential_facilities; f++) {
         if (demand[f] > facility_capacities[f]) {
-            cerr << "Facility " << f + 1 << " has a capacity of " << facility_capacities[f] << " but has a total demand of " << demand[f] << "!\n";
+            cerr << "Facility " << f + 1 << " has a capacity of " << facility_capacities[f] << " but has a total demand of " << demand[f] << "!"
+                 << endl;
             return false;
         }
     }
     return true;
 }
+
 double Instance::objective_value(const Solution& sol) {
     // First check if solution is valid
     if (!checker(sol)) {
@@ -75,6 +75,7 @@ double Instance::objective_value(const Solution& sol) {
 
 int Instance::get_facility_index(const Point2D& pos) {
     // TODO: see if creating a map to make this faster is useful
+    // -> didn't have time
     for (int f = 0; f < nb_potential_facilities; f++) {
         if (facility_positions[f] == pos) {
             return f;
@@ -86,13 +87,13 @@ int Instance::get_facility_index(const Point2D& pos) {
 void Instance::visualize(const Solution& sol, string instance_name) {
     // Make sure solution is valid
     if (!checker(sol)) {
-        cerr << "Given solution isn't valid : can't create a visualizer!\n";
+        cerr << "Given solution isn't valid : can't create a visualizer!" << endl;
         return;
     }
     // Create file
     ofstream svg("../" + instance_name + ".svg");
     if (!svg) {
-        cerr << "Couldn't create SVG file!\n";
+        cerr << "Couldn't create SVG file!" << endl;
         return;
     }
     // Create the initial image
@@ -105,18 +106,18 @@ void Instance::visualize(const Solution& sol, string instance_name) {
     for (const Point2D& facility : used_facilities) {
         // The positions are always between 0 and 1 -> we can multiply the value by the size of the image
         svg << R"(<circle cx=")" << facility.x * size << R"(" cy=")" << facility.y * size
-            << R"(" r="6.0" fill ="blue" stroke="black" stroke-width="1" />)" << "\n";
+            << R"(" r="6.0" fill ="blue" stroke="black" stroke-width="1" />)" << endl;
     }
     // Create a red dot for each customer and a line between each customer and its supplier
     for (int c = 0; c < nb_customers; c++) {
         svg << R"(<circle cx=")" << customer_positions[c].x * size << R"(" cy=")" << customer_positions[c].y * size
-            << R"(" r="3.0" fill="red" stroke="black" stroke-width="1" />)" << "\n";
+            << R"(" r="3.0" fill="red" stroke="black" stroke-width="1" />)" << endl;
         svg << R"( <line x1=")" << customer_positions[c].x * size << R"(" y1=")" << customer_positions[c].y * size << R"(" x2=")" << sol[c].x * size
-            << R"(" y2=")" << sol[c].y * size << R"(" opacity="0.3" stroke="green" stroke-width="2" />)" << "\n";
+            << R"(" y2=")" << sol[c].y * size << R"(" opacity="0.3" stroke="green" stroke-width="2" />)" << endl;
     }
 
     // End document
-    svg << "</svg>\n";
+    svg << "</svg>" << endl;
     svg.close();
 }
 

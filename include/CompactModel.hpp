@@ -31,12 +31,24 @@ struct CompactModel {
      */
     CompactModel(const Instance& inst_, bool verbose_ = false);
 
+    /**
+     * @brief Converts the current model variables values to a solution
+     */
     Solution convertSolution();
 
+    /**
+     * @brief Solve the model given the time limit
+     */
     void solve(int time_limit);
 
+    /**
+     * @brief Solve the linear relaxation of the model given the time limit
+     */
     void solveRelaxation(int time_limit);
 
+    /**
+     * @brief Print the result in the terminal
+     */
     void printResult();
 
     ~CompactModel();
