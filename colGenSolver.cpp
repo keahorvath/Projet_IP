@@ -82,20 +82,8 @@ int main(int argc, char** argv) {
 
     cout << "Solving model ..." << endl;
     ColGenModel model(inst, pricing_method, column_strategy, stabilization, verbose);
-    // model.solve(time_limit);
-    // model.printResult();
-    DivingHeuristic diving(model);
-    diving.solve(60);
+    model.solve(time_limit);
+    model.printResult();
 
-    // for (GRBVar var : model.lambda) {
-    //     cout << var.get(GRB_StringAttr_VarName) << " = " << var.get(GRB_DoubleAttr_X) << endl;
-    // }
-    cout << "Value = " << model.obj() << endl;
-    Solution sol = diving.convertSolution();
-    if (inst.checker(sol)) {
-        cout << "Solution is valid" << endl;
-    } else {
-        cout << "Solution in NOT valid" << endl;
-    }
     return 0;
 }
