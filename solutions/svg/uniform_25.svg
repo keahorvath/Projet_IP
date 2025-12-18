@@ -1,0 +1,327 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="800" height="800">
+"<rect x="0.0" y="0.0" width="800.0" height="800.0" fill ="white" /><circle cx="111.453" cy="67.9168" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="61.2753" cy="603.338" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="467.116" cy="451.164" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="609.278" cy="695.686" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="669.752" cy="748.954" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="566.059" cy="169.474" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="437.582" cy="575.4" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="504.606" cy="69.2643" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="404.476" cy="798.831" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="763.09" cy="32.6054" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="414.885" cy="86.9736" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="627.517" cy="125.801" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="314.132" cy="512.531" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="150.189" cy="435.874" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="286.615" cy="266.208" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="492.09" cy="253.13" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="670.371" cy="248.118" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="215.614" cy="19.0612" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="199.512" cy="750.946" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="37.9659" cy="685.595" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="371.029" cy="364.802" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="785.946" cy="519.134" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="733.26" cy="355.118" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="209.252" cy="295.679" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="622.608" cy="589.754" r="6.0" fill ="blue" stroke="black" stroke-width="1" />
+<circle cx="501.296" cy="548.446" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="501.296" y1="548.446" x2="437.582" y2="575.4" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="456.725" cy="50.1193" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="456.725" y1="50.1193" x2="504.606" y2="69.2643" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="605.057" cy="7.45649" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="605.057" y1="7.45649" x2="763.09" y2="32.6054" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="259.452" cy="439.994" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="259.452" y1="439.994" x2="314.132" y2="512.531" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="124.764" cy="364.279" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="124.764" y1="364.279" x2="150.189" y2="435.874" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="511.238" cy="192.817" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="511.238" y1="192.817" x2="492.09" y2="253.13" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="722.114" cy="242.926" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="722.114" y1="242.926" x2="670.371" y2="248.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="529.608" cy="296.678" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="529.608" y1="296.678" x2="492.09" y2="253.13" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="577.887" cy="310.07" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="577.887" y1="310.07" x2="670.371" y2="248.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="77.9975" cy="70.9471" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="77.9975" y1="70.9471" x2="215.614" y2="19.0612" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="172.034" cy="549.274" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="172.034" y1="549.274" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="423.18" cy="266.495" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="423.18" y1="266.495" x2="371.029" y2="364.802" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="27.3626" cy="497.589" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="27.3626" y1="497.589" x2="37.9659" y2="685.595" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="247.444" cy="479.332" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="247.444" y1="479.332" x2="371.029" y2="364.802" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="678.254" cy="349.654" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="678.254" y1="349.654" x2="733.26" y2="355.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="107.421" cy="728.813" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="107.421" y1="728.813" x2="37.9659" y2="685.595" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="662.635" cy="571.926" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="662.635" y1="571.926" x2="622.608" y2="589.754" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="202.595" cy="459.808" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="202.595" y1="459.808" x2="150.189" y2="435.874" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="71.4116" cy="265.254" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="71.4116" y1="265.254" x2="209.252" y2="295.679" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="656.761" cy="668.981" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="656.761" y1="668.981" x2="669.752" y2="748.954" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="213.353" cy="296.402" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="213.353" y1="296.402" x2="209.252" y2="295.679" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="591.518" cy="710.49" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="591.518" y1="710.49" x2="609.278" y2="695.686" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="592.466" cy="120.947" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="592.466" y1="120.947" x2="627.517" y2="125.801" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="193.77" cy="440.213" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="193.77" y1="440.213" x2="286.615" y2="266.208" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="410.623" cy="773.504" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="410.623" y1="773.504" x2="404.476" y2="798.831" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="325.633" cy="294.521" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="325.633" y1="294.521" x2="286.615" y2="266.208" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="432.685" cy="723.799" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="432.685" y1="723.799" x2="404.476" y2="798.831" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="606.745" cy="346.946" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="606.745" y1="346.946" x2="670.371" y2="248.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="214.198" cy="642.919" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="214.198" y1="642.919" x2="314.132" y2="512.531" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="593.723" cy="83.1928" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="593.723" y1="83.1928" x2="566.059" y2="169.474" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="177.729" cy="334.033" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="177.729" y1="334.033" x2="209.252" y2="295.679" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="788.374" cy="766.88" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="788.374" y1="766.88" x2="622.608" y2="589.754" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="696.791" cy="42.505" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="696.791" y1="42.505" x2="627.517" y2="125.801" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="560.593" cy="514.76" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="560.593" y1="514.76" x2="785.946" y2="519.134" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="767.699" cy="353.938" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="767.699" y1="353.938" x2="733.26" y2="355.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="384.488" cy="430.625" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="384.488" y1="430.625" x2="467.116" y2="451.164" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="727.25" cy="387.739" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="727.25" y1="387.739" x2="733.26" y2="355.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="420.763" cy="30.9697" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="420.763" y1="30.9697" x2="414.885" y2="86.9736" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="775.089" cy="379.422" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="775.089" y1="379.422" x2="733.26" y2="355.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="249.451" cy="664.326" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="249.451" y1="664.326" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="151.057" cy="107.118" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="151.057" y1="107.118" x2="215.614" y2="19.0612" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="262.511" cy="647.166" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="262.511" y1="647.166" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="784.466" cy="791" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="784.466" y1="791" x2="669.752" y2="748.954" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="633.806" cy="241.174" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="633.806" y1="241.174" x2="670.371" y2="248.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="551.849" cy="129.714" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="551.849" y1="129.714" x2="566.059" y2="169.474" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="749.978" cy="569.061" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="749.978" y1="569.061" x2="785.946" y2="519.134" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="263.975" cy="671.781" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="263.975" y1="671.781" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="289.797" cy="522.134" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="289.797" y1="522.134" x2="314.132" y2="512.531" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="613.578" cy="623.547" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="613.578" y1="623.547" x2="622.608" y2="589.754" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="490.664" cy="345.112" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="490.664" y1="345.112" x2="467.116" y2="451.164" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="706.986" cy="50.4495" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="706.986" y1="50.4495" x2="763.09" y2="32.6054" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="67.1584" cy="506.874" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="67.1584" y1="506.874" x2="61.2753" y2="603.338" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="444.113" cy="60.0258" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="444.113" y1="60.0258" x2="504.606" y2="69.2643" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="472.809" cy="588.282" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="472.809" y1="588.282" x2="437.582" y2="575.4" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="598.993" cy="743.225" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="598.993" y1="743.225" x2="609.278" y2="695.686" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="487.89" cy="166.196" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="487.89" y1="166.196" x2="566.059" y2="169.474" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="24.5526" cy="198.842" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="24.5526" y1="198.842" x2="111.453" y2="67.9168" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="287.227" cy="523.27" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="287.227" y1="523.27" x2="314.132" y2="512.531" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="535.404" cy="677.691" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="535.404" y1="677.691" x2="437.582" y2="575.4" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="201.915" cy="25.126" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="201.915" y1="25.126" x2="111.453" y2="67.9168" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="574.442" cy="746.249" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="574.442" y1="746.249" x2="371.029" y2="364.802" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="98.2432" cy="68.7686" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="98.2432" y1="68.7686" x2="111.453" y2="67.9168" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="492.841" cy="81.4944" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="492.841" y1="81.4944" x2="504.606" y2="69.2643" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="753.34" cy="467.281" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="753.34" y1="467.281" x2="785.946" y2="519.134" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="749.73" cy="740.866" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="749.73" y1="740.866" x2="785.946" y2="519.134" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="645.066" cy="459.526" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="645.066" y1="459.526" x2="492.09" y2="253.13" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="750.569" cy="785.676" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="750.569" y1="785.676" x2="622.608" y2="589.754" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="511.753" cy="681.741" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="511.753" y1="681.741" x2="437.582" y2="575.4" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="355.042" cy="618.714" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="355.042" y1="618.714" x2="437.582" y2="575.4" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="384.037" cy="90.2256" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="384.037" y1="90.2256" x2="215.614" y2="19.0612" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="107.856" cy="742.774" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="107.856" y1="742.774" x2="37.9659" y2="685.595" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="729.898" cy="223.339" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="729.898" y1="223.339" x2="670.371" y2="248.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="762.138" cy="27.2458" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="762.138" y1="27.2458" x2="763.09" y2="32.6054" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="599.812" cy="725.69" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="599.812" y1="725.69" x2="609.278" y2="695.686" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="535.761" cy="101.554" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="535.761" y1="101.554" x2="414.885" y2="86.9736" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="53.5358" cy="573.271" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="53.5358" y1="573.271" x2="61.2753" y2="603.338" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="670.601" cy="752.406" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="670.601" y1="752.406" x2="669.752" y2="748.954" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="720.732" cy="106.099" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="720.732" y1="106.099" x2="763.09" y2="32.6054" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="465.703" cy="379.377" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="465.703" y1="379.377" x2="467.116" y2="451.164" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="622.861" cy="113.65" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="622.861" y1="113.65" x2="627.517" y2="125.801" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="265.114" cy="439.611" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="265.114" y1="439.611" x2="314.132" y2="512.531" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="92.816" cy="739.11" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="92.816" y1="739.11" x2="37.9659" y2="685.595" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="444.705" cy="685.225" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="444.705" y1="685.225" x2="404.476" y2="798.831" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="532.39" cy="271.85" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="532.39" y1="271.85" x2="492.09" y2="253.13" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="632.256" cy="679.614" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="632.256" y1="679.614" x2="609.278" y2="695.686" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="227.742" cy="575.86" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="227.742" y1="575.86" x2="314.132" y2="512.531" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="63.2972" cy="696.682" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="63.2972" y1="696.682" x2="37.9659" y2="685.595" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="108.574" cy="139.546" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="108.574" y1="139.546" x2="111.453" y2="67.9168" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="226.899" cy="691.262" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="226.899" y1="691.262" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="406.286" cy="788.871" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="406.286" y1="788.871" x2="404.476" y2="798.831" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="775.917" cy="222.483" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="775.917" y1="222.483" x2="670.371" y2="248.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="728.97" cy="412.63" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="728.97" y1="412.63" x2="733.26" y2="355.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="2.80826" cy="46.975" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="2.80826" y1="46.975" x2="111.453" y2="67.9168" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="51.8371" cy="423.86" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="51.8371" y1="423.86" x2="150.189" y2="435.874" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="627.044" cy="149.135" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="627.044" y1="149.135" x2="627.517" y2="125.801" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="431.069" cy="71.3277" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="431.069" y1="71.3277" x2="414.885" y2="86.9736" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="133.484" cy="76.7608" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="133.484" y1="76.7608" x2="111.453" y2="67.9168" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="98.6288" cy="637.003" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="98.6288" y1="637.003" x2="61.2753" y2="603.338" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="687.99" cy="442.157" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="687.99" y1="442.157" x2="733.26" y2="355.118" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="168.03" cy="694.7" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="168.03" y1="694.7" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="353.619" cy="277.956" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="353.619" y1="277.956" x2="286.615" y2="266.208" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="85.912" cy="608.012" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="85.912" y1="608.012" x2="61.2753" y2="603.338" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="491.768" cy="151.124" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="491.768" y1="151.124" x2="566.059" y2="169.474" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="521.357" cy="134.21" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="521.357" y1="134.21" x2="566.059" y2="169.474" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="512.314" cy="296.379" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="512.314" y1="296.379" x2="492.09" y2="253.13" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="229.529" cy="73.4512" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="229.529" y1="73.4512" x2="215.614" y2="19.0612" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="172.147" cy="570.59" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="172.147" y1="570.59" x2="61.2753" y2="603.338" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="502.73" cy="2.9771" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="502.73" y1="2.9771" x2="504.606" y2="69.2643" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="60.2711" cy="654.53" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="60.2711" y1="654.53" x2="37.9659" y2="685.595" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="675.009" cy="7.11274" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="675.009" y1="7.11274" x2="763.09" y2="32.6054" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="45.6422" cy="687.526" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="45.6422" y1="687.526" x2="37.9659" y2="685.595" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="383.566" cy="213.089" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="383.566" y1="213.089" x2="286.615" y2="266.208" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="673.156" cy="643.628" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="673.156" y1="643.628" x2="609.278" y2="695.686" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="134.778" cy="792.755" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="134.778" y1="792.755" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="267.632" cy="252.603" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="267.632" y1="252.603" x2="286.615" y2="266.208" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="220.206" cy="693.772" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="220.206" y1="693.772" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="494.106" cy="756.77" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="494.106" y1="756.77" x2="404.476" y2="798.831" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="292.763" cy="98.8968" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="292.763" y1="98.8968" x2="215.614" y2="19.0612" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="362.344" cy="720.203" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="362.344" y1="720.203" x2="404.476" y2="798.831" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="101.65" cy="788.446" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="101.65" y1="788.446" x2="37.9659" y2="685.595" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="499.806" cy="162.11" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="499.806" y1="162.11" x2="492.09" y2="253.13" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="449.824" cy="8.39112" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="449.824" y1="8.39112" x2="215.614" y2="19.0612" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="137.582" cy="292.823" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="137.582" y1="292.823" x2="209.252" y2="295.679" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="292.139" cy="717.32" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="292.139" y1="717.32" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="334.351" cy="499.685" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="334.351" y1="499.685" x2="314.132" y2="512.531" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="23.3335" cy="713.49" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="23.3335" y1="713.49" x2="37.9659" y2="685.595" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="433.58" cy="332.522" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="433.58" y1="332.522" x2="492.09" y2="253.13" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="252.558" cy="670.659" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="252.558" y1="670.659" x2="199.512" y2="750.946" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="725.328" cy="617.263" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="725.328" y1="617.263" x2="785.946" y2="519.134" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="615.987" cy="578.932" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="615.987" y1="578.932" x2="622.608" y2="589.754" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="633.079" cy="215.216" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="633.079" y1="215.216" x2="627.517" y2="125.801" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="624.217" cy="139.316" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="624.217" y1="139.316" x2="627.517" y2="125.801" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="158.07" cy="378.007" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="158.07" y1="378.007" x2="209.252" y2="295.679" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="710.55" cy="605.377" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="710.55" y1="605.377" x2="785.946" y2="519.134" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="498.096" cy="129.271" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="498.096" y1="129.271" x2="566.059" y2="169.474" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="27.4333" cy="194.133" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="27.4333" y1="194.133" x2="371.029" y2="364.802" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="86.5424" cy="405.972" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="86.5424" y1="405.972" x2="150.189" y2="435.874" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="536.846" cy="742.675" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="536.846" y1="742.675" x2="622.608" y2="589.754" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="718.146" cy="767.954" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="718.146" y1="767.954" x2="669.752" y2="748.954" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="514.031" cy="434.514" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="514.031" y1="434.514" x2="467.116" y2="451.164" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="426.206" cy="95.4064" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="426.206" y1="95.4064" x2="414.885" y2="86.9736" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="477.282" cy="775.256" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="477.282" y1="775.256" x2="404.476" y2="798.831" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="436.272" cy="156.295" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="436.272" y1="156.295" x2="414.885" y2="86.9736" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="404.574" cy="116.093" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="404.574" y1="116.093" x2="414.885" y2="86.9736" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="582.496" cy="118.224" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="582.496" y1="118.224" x2="504.606" y2="69.2643" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="22.0236" cy="462.911" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="22.0236" y1="462.911" x2="61.2753" y2="603.338" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="247.114" cy="188.344" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="247.114" y1="188.344" x2="286.615" y2="266.208" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="104.82" cy="436.093" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="104.82" y1="436.093" x2="150.189" y2="435.874" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="419.934" cy="490.618" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="419.934" y1="490.618" x2="467.116" y2="451.164" opacity="0.3" stroke="green" stroke-width="2" />
+<circle cx="556.671" cy="284.577" r="3.0" fill="red" stroke="black" stroke-width="1" />
+ <line x1="556.671" y1="284.577" x2="492.09" y2="253.13" opacity="0.3" stroke="green" stroke-width="2" />
+</svg>

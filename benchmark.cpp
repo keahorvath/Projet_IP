@@ -6,6 +6,7 @@
 
 #include "ColGenModel.hpp"
 #include "CompactModel.hpp"
+#include "DivingHeuristic.hpp"
 using namespace std;
 namespace fs = std::filesystem;
 
@@ -303,12 +304,79 @@ void compareWithAndWithoutStabilization(vector<string> file_paths, string csv_fi
     cout << "=== END OF BENCHMARK. Results are in " << csv_file << " ===" << endl;
 }
 
+void divingHeuristicResults(vector<string> file_paths, string csv_file, int time_limit) {
+    // Create csv file
+    ofstream file(csv_file);
+    if (!file.is_open()) {
+        cerr << "Error : Couldn't create file " << csv_file << endl;
+        return;
+    }
+
+    file << "Instance;Best Sol;Duration(s)" << endl;
+    cout << "=== STARTING DIVING HEURISTIC BENCHMARK ===" << endl;
+
+    for (const string& file_path : file_paths) {
+        // Remove
+        string file_name_clean = fs::path(file_path).stem().string();
+
+        cout << "Solving instance : " << file_name_clean << " ... " << flush;
+
+        try {
+            // Loading instance
+            ifstream inst_file(file_path);
+            Instance inst;
+            inst_file >> inst;
+
+            // Solve instance
+            ColGenModel model(inst, PricingMethod::DP, ColumnStrategy::MULTI, Stabilization::INOUT);
+            DivingHeuristic solver(model);
+            solver.solve(time_limit);
+
+            // Get results from Gurobi
+            int status = model.model->get(GRB_IntAttr_Status);
+            int sol_count = model.model->get(GRB_IntAttr_SolCount);
+
+            // If no solution, skip
+            if (sol_count == 0) {
+                cout << "No solution found -> skipping" << endl;
+                file << file_name_clean << ";NO_SOL;" << endl;
+                continue;
+            }
+
+            // Check validity
+            Solution sol = solver.convertSolution();
+            bool check = inst.checker(sol);
+            if (!check) {
+                cout << "Solution is NOT valid -> skipping" << endl;
+                file << file_name_clean << ";INVALID;" << endl;
+                continue;
+            }
+
+            // Create sol and visualizer files
+            exportSolution(sol, file_name_clean);
+            model.inst.visualize(sol, file_name_clean);
+            double best_sol = model.model->get(GRB_DoubleAttr_ObjVal);
+            double runtime = solver.runtime;
+
+            // Write in csv file
+            file << file_name_clean << ";" << fixed << setprecision(4) << best_sol << ";" << fixed << runtime << endl;
+            cout << "DONE! (" << runtime << "s)" << endl;
+
+        } catch (GRBException& e) {
+            cerr << "GUROBI error : " << e.getMessage() << endl;
+            file << file_name_clean << ";ERROR;;;;;" << endl;
+        }
+    }
+    file.close();
+    cout << "=== END OF BENCHMARK. Results are in " << csv_file << " ===" << endl;
+}
 int main(int argc, char** argv) {
     vector<string> file_paths = getSortedFiles("../instances");
     vector<string> valid_paths = getValidInstances(file_paths);
-    compactModelResults(valid_paths, "compact_model.csv", 600);
-    //  singleVsMulti(file_paths, "single_vs_multi.csv", 60);
-    //  comparePricingMethods(file_paths, "pricing_method.csv", 60);
-    // compareWithAndWithoutStabilization(valid_paths, "with_without_stabilization.csv", 60);
+    // compactModelResults(valid_paths, "compact_model.csv", 600);
+    //   singleVsMulti(file_paths, "single_vs_multi.csv", 60);
+    //   comparePricingMethods(file_paths, "pricing_method.csv", 60);
+    //  compareWithAndWithoutStabilization(valid_paths, "with_without_stabilization.csv", 60);
+    // divingHeuristicResults(valid_paths, "diving_heuristic.csv", 60);
     return 1;
 }

@@ -1,5 +1,7 @@
 #include "DivingHeuristic.hpp"
 
+#include <chrono>
+#include <iomanip>
 using namespace std;
 
 DivingHeuristic::DivingHeuristic(ColGenModel& model) : model(model) {}
@@ -191,6 +193,8 @@ Solution DivingHeuristic::convertSolution() {
 }
 
 void DivingHeuristic::solve(int time_limit) {
+    auto start = chrono::high_resolution_clock::now();
+    chrono::duration<double> time_elapsed = chrono::high_resolution_clock::now() - start;
     forced_facility_for_client.assign(model.inst.nb_customers, -1);
 
     // Solve model
@@ -232,5 +236,24 @@ void DivingHeuristic::solve(int time_limit) {
             }
             model.optimize();
         }
+    }
+    time_elapsed = chrono::high_resolution_clock::now() - start;
+    runtime = time_elapsed.count();
+}
+
+void DivingHeuristic::printResult() {
+    int status = model.model->get(GRB_IntAttr_Status);
+    double obj_val = model.model->get(GRB_DoubleAttr_ObjVal);
+    Solution sol = convertSolution();
+    bool is_valid = model.inst.checker(sol);
+    if (status == GRB_OPTIMAL && is_valid) {
+        cout << "-----------------------" << endl;
+        cout << "OPTIMAL INTEGER SOLUTION FOUND!" << endl;
+        cout << "-----------------------" << endl;
+        cout << "Optimal solution value : " << obj_val << " (" << fixed << setprecision(4) << runtime << "s)" << endl;
+    } else {
+        cout << "---------------------------" << endl;
+        cerr << "NO FEASIBLE INTEGER SOLUTION FOUND!" << endl;
+        cout << "---------------------------" << endl;
     }
 }

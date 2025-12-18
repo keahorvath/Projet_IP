@@ -15,6 +15,8 @@ struct DivingHeuristic {
 
     std::vector<int> forced_facility_for_client;  // keep in memory which assignments are forced
 
+    double runtime;
+
     /**
      * @brief Constructor for the DivingHeursitic structure
      */
@@ -61,5 +63,10 @@ struct DivingHeuristic {
      * in practice, I saw that finding an integer sol was pretty fast for all our instances)
      */
     void solve(int time_limit);
+
+    /**
+     * @brief print the result of current state in terminal
+     */
+    void printResult();
 };
 #endif
